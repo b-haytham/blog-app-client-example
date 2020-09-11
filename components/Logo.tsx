@@ -1,8 +1,9 @@
+import WebsiteLogo from '../public/logo.svg'
 
 const Logo = () => {
     return (
-        <div>
-            <h1>Logo</h1> 
+        <div style={{width: '50px', height: '50px'}}>
+            <WebsiteLogo/> 
         </div>
     )
 }
