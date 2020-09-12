@@ -5,7 +5,7 @@ import NextLink from 'next/link'
 const Link = styled.a`
     text-decoration: none;
     color: white;
-    font-size: 1.3em;
+    font-size: 1em;
     margin: 0 10px;
 
     &:hover {
