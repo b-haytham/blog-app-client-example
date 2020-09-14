@@ -4,7 +4,7 @@ import Layout from "../components/Layout";
 import { Title } from "../components/HomePage/HomeScreen";
 import NavLink from "../components/NavBar/NavLink";
 
-const SignIn = () => {
+const SignUp = () => {
     return (
         <Layout>
             <div
@@ -13,7 +13,8 @@ const SignIn = () => {
                     width: "50%",
                 }}
             >
-                <Title>Sign In und start your first Article</Title>
+                <Title>Sign Up und start your first Article</Title>
+                <Input placeholder="Usename" />
                 <Input placeholder="E-mail" />
                 <Input type="password" placeholder="Password" />
                 <Button>Sign Up</Button>
@@ -22,8 +23,8 @@ const SignIn = () => {
                     display: 'flex',
                     justifyContent: 'center'
                 }}>
-                    <NavLink color="black" href="/sign-up">
-                        Do not have An Account go Sign up
+                    <NavLink color="black" href="/sign-in">
+                        You have An Account go Sign In
                     </NavLink>
                 </div>
             </div>
@@ -31,4 +32,4 @@ const SignIn = () => {
     );
 };
 
-export default SignIn;
+export default SignUp;

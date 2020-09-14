@@ -1,0 +1,19 @@
+<svg  width="100%" height="100%">
+  <defs>
+    <pattern id="pattern" width="100" height="100" viewBox="0 0 40,40" patternUnits="userSpaceOnUse" patternTransform="rotate(127)">
+      <rect id="pattern-background" width="400%" height="400%" fill="rgba(114, 167, 68,0.23)"/>
+      <circle filter="url(#filter1pattern)" fill="rgba(189, 189, 189,1)" cx="5" cy="40" r="3"/>
+      <circle filter="url(#filter1pattern)" fill="rgba(189, 189, 189,1)" cx="25" cy="0" r="3"/>
+      <circle filter="url(#filter1pattern)" fill="rgba(189, 189, 189,1)" cx="5" cy="0" r="3"/>
+      <circle filter="url(#filter1pattern)" fill="rgba(189, 189, 189,1)" cx="25" cy="40" r="3"/>
+      <circle fill="#ffffff" cx="15" cy="20" r="5"/>
+      <circle fill="#ffffff" cx="35" cy="20" r="5"/>
+    </pattern>
+    <filter id="filter1pattern">
+      <feTurbulence baseFrequency="0.1" numOctaves="2" result="result1" type="fractalNoise"/>
+      <feDisplacementMap in2="result1" scale="1" result="result2" xChannelSelector="R" in="SourceGraphic"/>
+      <feComposite in2="result2" in="SourceGraphic" operator="atop" result="fbSourceGraphic"/>
+    </filter>
+  </defs>
+  <rect fill="url(#pattern)" height="100%" width="100%"/>
+</svg>

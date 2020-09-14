@@ -1,9 +1,10 @@
 import Layout from "../components/Layout";
+import MyEditor from "../components/Editor/DynamicLoadedEditor";
 
 const ExplorePosts = () => {
     return (
         <Layout>
-            <h1>EplorePosts</h1>
+            <MyEditor />
         </Layout>
     );
 };
