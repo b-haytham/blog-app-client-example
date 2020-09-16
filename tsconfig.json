@@ -22,7 +22,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "declaration.d.ts", "components/Editor/Editor.tsx"
+    "declaration.d.ts", "components/Editor/Editor.jsx"
   ],
   "exclude": [
     "node_modules"

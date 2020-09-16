@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const StyledButton = styled.button`
+const Button = styled.button`
     width: 100%;
     padding: 10px 25px;
     background-color: black;
@@ -21,12 +21,6 @@ const StyledButton = styled.button`
     }
 `;
 
-const Button: React.FC = ({ children }) => {
-    return (
-        <div>
-            <StyledButton>{children}</StyledButton>
-        </div>
-    );
-};
+
 
 export default Button;
