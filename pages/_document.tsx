@@ -1,3 +1,4 @@
+import { ServerStyleSheets } from "@material-ui/core/styles";
 import Document, {
     DocumentContext,
     Head,
@@ -6,33 +7,29 @@ import Document, {
     NextScript,
 } from "next/document";
 import React from "react";
-import { ServerStyleSheet } from "styled-components";
+
 
 export default class MyDocument extends Document {
     static async getInitialProps(ctx: DocumentContext) {
-        const sheet = new ServerStyleSheet();
+        const sheets = new ServerStyleSheets();
         const originalRenderPage = ctx.renderPage;
 
-        try {
-            ctx.renderPage = () =>
-                originalRenderPage({
-                    enhanceApp: (App) => (props) =>
-                        sheet.collectStyles(<App {...props} />),
-                });
+        ctx.renderPage = () =>
+            originalRenderPage({
+                enhanceApp: (App) => (props) =>
+                    sheets.collect(<App {...props} />),
+            });
 
-            const initialProps = await Document.getInitialProps(ctx);
-            return {
-                ...initialProps,
-                styles: (
-                    <>
-                        {initialProps.styles}
-                        {sheet.getStyleElement()}
-                    </>
-                ),
-            };
-        } finally {
-            sheet.seal();
-        }
+        const initialProps = await Document.getInitialProps(ctx);
+
+        return {
+            ...initialProps,
+            // Styles fragment is rendered after the app and page rendering finish.
+            styles: [
+                ...React.Children.toArray(initialProps.styles),
+                sheets.getStyleElement(),
+            ],
+        };
     }
     render() {
         return (
@@ -42,6 +39,14 @@ export default class MyDocument extends Document {
                         href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,700&family=Roboto:ital,wght@0,100;0,400;0,900;1,100&display=swap"
                         rel="stylesheet"
                     ></link>
+                    <link
+                        rel="stylesheet"
+                        href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+                    />
+                    <link
+                        rel="stylesheet"
+                        href="https://fonts.googleapis.com/icon?family=Material+Icons"
+                    />
                 </Head>
                 <body>
                     <Main />

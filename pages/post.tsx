@@ -10,8 +10,7 @@ const ImageThumbernail = styled.img`
 
 const Post = ( ) => {
     return(
-        <Layout>
-        </Layout>
+    
     )
 }
 

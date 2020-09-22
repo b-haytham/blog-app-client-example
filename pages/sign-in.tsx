@@ -3,41 +3,54 @@ import Input from "../components/Form/Input";
 import Layout from "../components/Layout";
 import { Title } from "../components/HomePage/HomeScreen";
 import NavLink from "../components/NavBar/NavLink";
-import { MeDocument, MeQuery, SignInMutation, useMeQuery, useSignInMutation } from "../generated/graphql";
+import {
+    MeDocument,
+    MeQuery,
+    SignInMutation,
+    useMeQuery,
+    useSignInMutation,
+} from "../generated/graphql";
 import { FormEvent, useState } from "react";
 import { withApollo } from "../utils/withApollo";
-import {  useRouter } from "next/router";
+import { useRouter } from "next/router";
 
 const SignIn = () => {
-    const router = useRouter()
-    const {data, loading, error} = useMeQuery()
+    const router = useRouter();
+    const { data, loading, error } = useMeQuery();
     const [signIn] = useSignInMutation();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    if(data?.me){
-        router.push('/')
+    if (data?.me) {
+        router.push({
+            pathname: "/[user]",
+        }, `/${data.me.username}`);
     }
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+        e.preventDefault();
         const result = await signIn({
             variables: {
                 email,
-                password
+                password,
             },
-            update: (cache, {data})=> {
+            update: (cache, { data }) => {
                 cache.writeQuery<MeQuery>({
                     query: MeDocument,
                     data: {
                         __typename: "Query",
-                        me: data?.signInUser
-                    }
-                })
-                cache.evict({fieldName: "posts:{}"})
-            }
-        })
-        router.push('/')
+                        me: data?.signInUser,
+                    },
+                });
+                cache.evict({ fieldName: "posts:{}" });
+            },
+        });
+        router.push({
+            pathname: "/[user]",
+            query: {
+                user: result.data?.signInUser.username
+            },
+        });
     };
 
     return (
@@ -50,8 +63,17 @@ const SignIn = () => {
             >
                 <Title>Sign In und start your first Article</Title>
                 <form onSubmit={handleSubmit}>
-                    <Input value={email} onChange={(e)=> setEmail(e.target.value)} placeholder="E-mail" />
-                    <Input value={password} onChange={(e)=> setPassword(e.target.value)} type="password" placeholder="Password" />
+                    <Input
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="E-mail"
+                    />
+                    <Input
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        type="password"
+                        placeholder="Password"
+                    />
                     <Button>Sign Up</Button>
                 </form>
                 <div
@@ -80,4 +102,4 @@ const SignIn = () => {
     );
 };
 
-export default withApollo({ssr:false})(SignIn);
+export default withApollo({ ssr: false })(SignIn);

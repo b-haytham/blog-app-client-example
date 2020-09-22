@@ -19,9 +19,7 @@ export const Title = styled.h1`
 
 const HomeScreen = () => {
     return (
-        <HomeScreenWrapper>
-            <Title>Welcome To Blog App</Title>
-        </HomeScreenWrapper>
+      <div>hello</div>
     )
 }
 
