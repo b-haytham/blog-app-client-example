@@ -3,14 +3,21 @@ import Input from "../components/Form/Input";
 import Layout from "../components/Layout";
 import { Title } from "../components/HomePage/HomeScreen";
 import NavLink from "../components/NavBar/NavLink";
-import { useSignInMutation } from "../generated/graphql";
+import { MeDocument, MeQuery, SignInMutation, useMeQuery, useSignInMutation } from "../generated/graphql";
 import { FormEvent, useState } from "react";
 import { withApollo } from "../utils/withApollo";
+import {  useRouter } from "next/router";
 
 const SignIn = () => {
+    const router = useRouter()
+    const {data, loading, error} = useMeQuery()
     const [signIn] = useSignInMutation();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+    if(data?.me){
+        router.push('/')
+    }
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -18,9 +25,19 @@ const SignIn = () => {
             variables: {
                 email,
                 password
+            },
+            update: (cache, {data})=> {
+                cache.writeQuery<MeQuery>({
+                    query: MeDocument,
+                    data: {
+                        __typename: "Query",
+                        me: data?.signInUser
+                    }
+                })
+                cache.evict({fieldName: "posts:{}"})
             }
         })
-        console.log(result)
+        router.push('/')
     };
 
     return (

@@ -21,7 +21,7 @@ const Link = styled.a`
 interface NavLinkProps {
     href: string 
     as?: string
-    color: string
+    color?: string
 }
 
 const NavLink: React.FC<NavLinkProps> = (props) => {

@@ -3,28 +3,50 @@ import Input from "../components/Form/Input";
 import Layout from "../components/Layout";
 import { Title } from "../components/HomePage/HomeScreen";
 import NavLink from "../components/NavBar/NavLink";
-import { useCreateUserMutation } from "../generated/graphql";
-import { ChangeEvent, FormEvent,  useState } from "react";
+import {
+    MeDocument,
+    MeQuery,
+    useCreateUserMutation,
+    useMeQuery,
+} from "../generated/graphql";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { withApollo } from "../utils/withApollo";
+import { useRouter } from "next/router";
 
 const SignUp = () => {
-    const [createUser, {data, error}] = useCreateUserMutation();
-    const [username, setUsername] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const router = useRouter()
+    const [createUser] = useCreateUserMutation();
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const {data, loading} = useMeQuery()
+    
+
+    if(data?.me){
+        router.push('/')
+    }
+
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        const responce =  await createUser({
+        e.preventDefault();
+        const responce = await createUser({
             variables: {
                 username,
                 email,
-                password
-            }
-        })
-        console.log(responce)
-        
-    }
+                password,
+            },
+            update: (cache, { data }) => {
+                cache.writeQuery<MeQuery>({
+                    query: MeDocument,
 
+                    data: {
+                        __typename: "Query",
+                        me: data?.createUser,
+                    },
+                });
+            },
+        });
+        console.log(responce);
+    };
 
     return (
         <Layout>
@@ -39,19 +61,19 @@ const SignUp = () => {
                     <Input
                         name="username"
                         value={username}
-                        onChange={(e)=> setUsername(e.target.value)}
+                        onChange={(e) => setUsername(e.target.value)}
                         placeholder="Username"
                     />
                     <Input
                         name="email"
                         value={email}
-                        onChange={(e)=> setEmail(e.target.value)}
+                        onChange={(e) => setEmail(e.target.value)}
                         placeholder="E-mail"
                     />
                     <Input
                         name="password"
                         value={password}
-                        onChange={(e)=> setPassword(e.target.value)}
+                        onChange={(e) => setPassword(e.target.value)}
                         type="password"
                         placeholder="Password"
                     />
@@ -73,4 +95,4 @@ const SignUp = () => {
     );
 };
 
-export default withApollo({ssr: false})(SignUp);
+export default withApollo({ ssr: false })(SignUp);

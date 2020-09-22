@@ -8,6 +8,9 @@ import '../styles/editor.css'
 
 import 'draft-js-emoji-plugin/lib/plugin.css';
 import 'draft-js-static-toolbar-plugin/lib/plugin.css'; 
+import 'draft-js-image-plugin/lib/plugin.css';
+
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
 const App: React.FC<AppProps> = ({Component,pageProps }) => {
     return (

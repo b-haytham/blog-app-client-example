@@ -1,10 +1,24 @@
 import { Component } from "react";
-import { EditorState, RichUtils } from "draft-js";
-import Editor from "draft-js-plugins-editor";
+import { convertToRaw, EditorState, RichUtils } from "draft-js";
+import Editor, {composeDecorators} from "draft-js-plugins-editor";
 import styled from "styled-components";
 
 import createEmojiPlugin from "draft-js-emoji-plugin";
 import createToolbarPlugin from "draft-js-static-toolbar-plugin";
+
+import createImagePlugin from 'draft-js-image-plugin';
+
+import createAlignmentPlugin from 'draft-js-alignment-plugin';
+
+import createFocusPlugin from 'draft-js-focus-plugin';
+
+import createResizeablePlugin from 'draft-js-resizeable-plugin';
+
+import createBlockDndPlugin from 'draft-js-drag-n-drop-plugin';
+
+import createDragNDropUploadPlugin from '@mikeljames/draft-js-drag-n-drop-upload-plugin';
+
+
 
 import {
     ItalicButton,
@@ -16,6 +30,7 @@ import {
     BlockquoteButton,
     CodeBlockButton,
 } from "draft-js-buttons";
+import Button from "../Form/Button";
 
 const ToolBarButton = styled.button`
     width: 45px;
@@ -44,6 +59,36 @@ const { EmojiSuggestions, EmojiSelect } = emogiPlugin;
 const toolbarPlugin = createToolbarPlugin();
 const { Toolbar } = toolbarPlugin;
 
+const focusPlugin = createFocusPlugin();
+const resizeablePlugin = createResizeablePlugin();
+const blockDndPlugin = createBlockDndPlugin();
+const alignmentPlugin = createAlignmentPlugin();
+const { AlignmentTool } = alignmentPlugin;
+
+const decorator = composeDecorators(
+  resizeablePlugin.decorator,
+  alignmentPlugin.decorator,
+  focusPlugin.decorator,
+  blockDndPlugin.decorator
+);
+const imagePlugin = createImagePlugin({ decorator });
+
+const dragNDropFileUploadPlugin = createDragNDropUploadPlugin({
+    handleUpload: (f)=> console.log(f),
+    addImage: imagePlugin.addImage,
+  });
+  
+  const plugins = [
+    dragNDropFileUploadPlugin,
+    blockDndPlugin,
+    focusPlugin,
+    alignmentPlugin,
+    resizeablePlugin,
+    imagePlugin,
+    emogiPlugin,
+    toolbarPlugin
+  ];
+
 class MyEditor extends Component {
     
     constructor(props) {
@@ -53,6 +98,8 @@ class MyEditor extends Component {
         }
         this.onChange = editorState => this.setState({editorState})
     }
+
+    
 
     handleKeyCommand = (command, editorState) => {
         const newState = RichUtils.handleKeyCommand(editorState, command);
@@ -72,9 +119,20 @@ class MyEditor extends Component {
         }
         if (type === 'code-block' ) {
             return 'fancyCodeBlock';
-          }
+        }
     }
    
+
+    handleSave = () => {
+        const editorContent = this.state.editorState.getCurrentContent()
+        console.log(convertToRaw(editorContent))
+    }
+
+
+    focus = () => {
+        this.editor.focus()
+    }
+
     render(){
 
         return (
@@ -85,7 +143,9 @@ class MyEditor extends Component {
                     width: "100%",
                     height: "100%",
                 }}
+                onClick={this.focus}
             >
+                <Button onClick={this.handleSave}>Save</Button>
                 <Toolbar>
                     {
                         // may be use React.Fragment instead of div to improve perfomance after React 16
@@ -109,7 +169,7 @@ class MyEditor extends Component {
                     editorState={this.state.editorState}
                     onChange={this.onChange}
                     ref={(element)=> this.editor = element}
-                    plugins={[emogiPlugin, toolbarPlugin]}
+                    plugins={plugins}
                     blockStyleFn={this.myBlockStyleFn}
                 />
                 <EmojiSuggestions />

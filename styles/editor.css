@@ -1,9 +1,9 @@
-div.DraftEditor-root {
+/* div.DraftEditor-root {
     
     background-color: beige;
     height: 100%;
     width: 100%;
-    overflow-y: auto;
+    overflow-y: scroll;
     padding: 20px;
     border-radius: 0 0 15px 15px;
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
@@ -12,7 +12,7 @@ div.DraftEditor-editorContainer,
 div.public-DraftEditor-content {
     height: 100%;
     width: 100%;
-}
+} */
 
 
 .superFancyBlockquote {
@@ -27,5 +27,19 @@ div.public-DraftEditor-content {
     padding: 10px;
     color: white;
     
+}
+
+.wrapperClassName {
+    width: 100%;
+    height: 100%;
+}
+
+.editorClassName {
+    width: 100%;
+    height: 100%;
+    overflow-y : scroll;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    background-color: beige;
+    padding: 20px;
 }
 
