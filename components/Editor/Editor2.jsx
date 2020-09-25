@@ -2,7 +2,6 @@ import {  useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
 import { EditorState, convertToRaw } from "draft-js";
 
-import Button from "../Form/Button";
 import {
     FormControl,
     FormLabel,
@@ -51,7 +50,7 @@ const Editor2 = () => {
 
     return (
         <div style={{ width: "100%" }}>
-            <FormControl>
+            {/* <FormControl>
                 <FormLabel htmlFor="title">Post Title</FormLabel>
                 <Input
                     value={title}
@@ -71,7 +70,7 @@ const Editor2 = () => {
                 <FormHelperText id="description-helper-text">
                     For SEO
                 </FormHelperText>
-            </FormControl>
+            </FormControl> */}
 
             <Editor
                 editorState={editorState}
@@ -87,7 +86,7 @@ const Editor2 = () => {
                 }}
             />
 
-            <FormControl>
+            {/* <FormControl>
                 <FormLabel htmlFor="category">Category</FormLabel>
                 <Select
                     value={category}
@@ -103,7 +102,7 @@ const Editor2 = () => {
                 </FormHelperText>
             </FormControl>
 
-            <Button onClick={handleSave}>Save</Button>
+            <Button onClick={handleSave}>Save</Button> */}
         </div>
     );
 };

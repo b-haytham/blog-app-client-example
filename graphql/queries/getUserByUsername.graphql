@@ -1,0 +1,21 @@
+query getUserByUsername($username:String!) {
+  getUser(username: $username){
+    id
+    email
+    avatar
+    username
+    studied_at
+    work_at
+    github
+    facebook
+    tweeter
+    created_at
+    posts{
+      id
+      title
+      tags
+      description
+      created_at
+    }
+  }
+}

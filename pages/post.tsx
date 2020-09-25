@@ -1,4 +1,3 @@
-import Layout from "../components/Layout"
 import styled from "styled-components"
 
 const ImageThumbernail = styled.img`
@@ -10,7 +9,7 @@ const ImageThumbernail = styled.img`
 
 const Post = ( ) => {
     return(
-    
+        <h1>Post</h1>
     )
 }
 

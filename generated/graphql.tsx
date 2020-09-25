@@ -14,6 +14,12 @@ export type Scalars = {
 export type Query = {
   __typename?: 'Query';
   me?: Maybe<User>;
+  getUser: User;
+};
+
+
+export type QueryGetUserArgs = {
+  username: Scalars['String'];
 };
 
 export type User = {
@@ -55,6 +61,7 @@ export type Mutation = {
   forgetPassword: Scalars['Boolean'];
   logout: Scalars['Boolean'];
   createPost: Post;
+  getPublicPostById: Post;
 };
 
 
@@ -80,6 +87,11 @@ export type MutationCreatePostArgs = {
   content: Scalars['String'];
   title: Scalars['String'];
   description: Scalars['String'];
+};
+
+
+export type MutationGetPublicPostByIdArgs = {
+  postId: Scalars['Float'];
 };
 
 export type CreatePostMutationVariables = Exact<{
@@ -131,6 +143,23 @@ export type SignInMutation = (
   & { signInUser: (
     { __typename?: 'User' }
     & Pick<User, 'username' | 'email' | 'created_at' | 'updated_at' | 'avatar'>
+  ) }
+);
+
+export type GetUserByUsernameQueryVariables = Exact<{
+  username: Scalars['String'];
+}>;
+
+
+export type GetUserByUsernameQuery = (
+  { __typename?: 'Query' }
+  & { getUser: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'email' | 'avatar' | 'username' | 'studied_at' | 'work_at' | 'github' | 'facebook' | 'tweeter' | 'created_at'>
+    & { posts: Array<(
+      { __typename?: 'Post' }
+      & Pick<Post, 'id' | 'title' | 'tags' | 'description' | 'created_at'>
+    )> }
   ) }
 );
 
@@ -286,6 +315,55 @@ export function useSignInMutation(baseOptions?: Apollo.MutationHookOptions<SignI
 export type SignInMutationHookResult = ReturnType<typeof useSignInMutation>;
 export type SignInMutationResult = Apollo.MutationResult<SignInMutation>;
 export type SignInMutationOptions = Apollo.BaseMutationOptions<SignInMutation, SignInMutationVariables>;
+export const GetUserByUsernameDocument = gql`
+    query getUserByUsername($username: String!) {
+  getUser(username: $username) {
+    id
+    email
+    avatar
+    username
+    studied_at
+    work_at
+    github
+    facebook
+    tweeter
+    created_at
+    posts {
+      id
+      title
+      tags
+      description
+      created_at
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetUserByUsernameQuery__
+ *
+ * To run a query within a React component, call `useGetUserByUsernameQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserByUsernameQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserByUsernameQuery({
+ *   variables: {
+ *      username: // value for 'username'
+ *   },
+ * });
+ */
+export function useGetUserByUsernameQuery(baseOptions?: Apollo.QueryHookOptions<GetUserByUsernameQuery, GetUserByUsernameQueryVariables>) {
+        return Apollo.useQuery<GetUserByUsernameQuery, GetUserByUsernameQueryVariables>(GetUserByUsernameDocument, baseOptions);
+      }
+export function useGetUserByUsernameLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserByUsernameQuery, GetUserByUsernameQueryVariables>) {
+          return Apollo.useLazyQuery<GetUserByUsernameQuery, GetUserByUsernameQueryVariables>(GetUserByUsernameDocument, baseOptions);
+        }
+export type GetUserByUsernameQueryHookResult = ReturnType<typeof useGetUserByUsernameQuery>;
+export type GetUserByUsernameLazyQueryHookResult = ReturnType<typeof useGetUserByUsernameLazyQuery>;
+export type GetUserByUsernameQueryResult = Apollo.QueryResult<GetUserByUsernameQuery, GetUserByUsernameQueryVariables>;
 export const MeDocument = gql`
     query me {
   me {
