@@ -6,7 +6,7 @@ import { withApollo } from "../../utils/withApollo";
 
 const UserIndex = () => {
     const router = useRouter()
-    console.log(router.query.user)
+    console.log(router)
     const {data, error, loading} = useGetUserByUsernameQuery({
         variables:{
             username: router.query.user as string

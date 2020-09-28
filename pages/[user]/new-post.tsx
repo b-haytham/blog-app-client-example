@@ -1,11 +1,16 @@
 import { Typography } from "@material-ui/core"
-import { useRouter } from "next/router"
-import { useEffect } from "react"
 import Layout from "../../components/NavBar/Layout"
+
+import Editor from '../../components/Editor/DynamicLoadedEditor'
+import { useRouter } from "next/router"
 import { useGetUserByUsernameQuery } from "../../generated/graphql"
+import { useEffect } from "react"
 import { withApollo } from "../../utils/withApollo"
 
-const EditProfile = () => {
+interface NewPostProps {}
+
+const NewPost: React.FC<NewPostProps> = ({}) => { 
+
     const router =  useRouter()
     const {data, loading, error} = useGetUserByUsernameQuery({
         variables: {
@@ -20,11 +25,13 @@ const EditProfile = () => {
 
     },[data, error, loading, router])
 
-    return (
+    return(
         <Layout>
-            <Typography>Edit Profile</Typography>
+            <Typography align='center' variant='h1' >Create New Post</Typography>
+            <Editor/>
         </Layout>
-    )
+    );
 }
 
-export default withApollo({ssr: true})( EditProfile) 
+
+export default withApollo({ssr:true})(NewPost)

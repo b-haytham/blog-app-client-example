@@ -1,10 +1,13 @@
-import MyEditor from "../components/Editor/DynamicLoadedEditor";
+import { Typography } from "@material-ui/core";
+
+
+
 import Layout from "../components/NavBar/Layout";
 
 const ExplorePosts = () => {
     return (
         <Layout>
-            <MyEditor />
+            <Typography align='center' variant='h1'> Explore </Typography>
         </Layout>
     );
 };

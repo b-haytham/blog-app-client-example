@@ -11,6 +11,7 @@ import {
 
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 import { useState } from "react";
 import { useLogoutMutation, useMeQuery } from "../../generated/graphql";
@@ -49,6 +50,7 @@ const useStyles = makeStyles({
 
 const NavBar = () => {
     const classes = useStyles();
+    const router = useRouter()
     const apolloClient = useApolloClient();
 
     const { data, error, loading } = useMeQuery();
@@ -147,21 +149,15 @@ const NavBar = () => {
                             open={isMenuOpen}
                             onClose={handleMenuClose}
                         >
-                            <Link href="/[user]" as={`/${data.me.username}`}>
-                                <MenuItem>Profile</MenuItem>
-                            </Link>
-                            <Link
-                                href="/[user]/dashboard"
-                                as={`/${data.me.username}/dashboard`}
-                            >
-                                <MenuItem>Dashboard</MenuItem>
-                            </Link>
-                            <Link
-                                href="/[user]/edit-profile"
-                                as={`/${data.me.username}/edit-profile`}
-                            >
-                                <MenuItem>Settings</MenuItem>
-                            </Link>
+                            <MenuItem onClick={()=>{
+                                router.push('/[user]', `/${data.me?.username}`)
+                            }} >Profile</MenuItem>
+                            <MenuItem onClick={()=>{
+                                router.push('/[user]/dashboard', `/${data.me?.username}/dashboard`)
+                            }} >Dashboard</MenuItem>
+                            <MenuItem onClick={()=> {
+                                router.push('/[user]/edit-profile', `/${data.me?.username}/edit-profile`)
+                            }} >Settings</MenuItem>
                             <MenuItem
                                 onClick={async () => {
                                     await logout();
