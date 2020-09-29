@@ -15,11 +15,17 @@ export type Query = {
   __typename?: 'Query';
   me?: Maybe<User>;
   getUser: User;
+  getPublicPostById: Post;
 };
 
 
 export type QueryGetUserArgs = {
   username: Scalars['String'];
+};
+
+
+export type QueryGetPublicPostByIdArgs = {
+  postId: Scalars['Float'];
 };
 
 export type User = {
@@ -30,6 +36,8 @@ export type User = {
   last_name?: Maybe<Scalars['String']>;
   email: Scalars['String'];
   posts: Array<Post>;
+  comments: Array<Comment>;
+  likes: Array<Like>;
   avatar?: Maybe<Scalars['String']>;
   studied_at?: Maybe<Scalars['String']>;
   work_at?: Maybe<Scalars['String']>;
@@ -45,11 +53,38 @@ export type Post = {
   id: Scalars['ID'];
   title: Scalars['String'];
   description: Scalars['String'];
+  thumbnail?: Maybe<Scalars['String']>;
   content: Scalars['String'];
   creatorId: Scalars['Float'];
   creator: User;
+  likes: Array<Like>;
+  comments: Array<Comment>;
   tags: Scalars['Float'];
   published: Scalars['Boolean'];
+  created_at: Scalars['String'];
+  updated_at: Scalars['String'];
+};
+
+export type Like = {
+  __typename?: 'Like';
+  id: Scalars['ID'];
+  parent: Scalars['String'];
+  postId?: Maybe<Scalars['Float']>;
+  commentId?: Maybe<Scalars['Float']>;
+  post: Post;
+  comment: Comment;
+  creator: User;
+  created_at: Scalars['String'];
+  updated_at: Scalars['String'];
+};
+
+export type Comment = {
+  __typename?: 'Comment';
+  id: Scalars['ID'];
+  content: Scalars['String'];
+  creator: User;
+  post: Post;
+  likes: Array<Like>;
   created_at: Scalars['String'];
   updated_at: Scalars['String'];
 };
@@ -57,11 +92,13 @@ export type Post = {
 export type Mutation = {
   __typename?: 'Mutation';
   createUser: User;
+  updateUser: User;
   signInUser: User;
   forgetPassword: Scalars['Boolean'];
   logout: Scalars['Boolean'];
   createPost: Post;
-  getPublicPostById: Post;
+  updatePost: Post;
+  deletePost: Scalars['Boolean'];
 };
 
 
@@ -69,6 +106,12 @@ export type MutationCreateUserArgs = {
   password: Scalars['String'];
   email: Scalars['String'];
   username: Scalars['String'];
+};
+
+
+export type MutationUpdateUserArgs = {
+  input: UpdateUserInputType;
+  userId: Scalars['Float'];
 };
 
 
@@ -90,8 +133,34 @@ export type MutationCreatePostArgs = {
 };
 
 
-export type MutationGetPublicPostByIdArgs = {
+export type MutationUpdatePostArgs = {
+  input: UpdatePostInputType;
   postId: Scalars['Float'];
+};
+
+
+export type MutationDeletePostArgs = {
+  postId: Scalars['Float'];
+};
+
+export type UpdateUserInputType = {
+  usename: Scalars['String'];
+  first_name?: Maybe<Scalars['String']>;
+  last_name?: Maybe<Scalars['String']>;
+  avatar?: Maybe<Scalars['String']>;
+  studied_at?: Maybe<Scalars['String']>;
+  work_at?: Maybe<Scalars['String']>;
+  github?: Maybe<Scalars['String']>;
+  facebook?: Maybe<Scalars['String']>;
+  tweeter?: Maybe<Scalars['String']>;
+};
+
+export type UpdatePostInputType = {
+  title: Scalars['String'];
+  description: Scalars['String'];
+  thumbnail?: Maybe<Scalars['String']>;
+  content: Scalars['String'];
+  published: Scalars['Boolean'];
 };
 
 export type CreatePostMutationVariables = Exact<{
@@ -105,7 +174,7 @@ export type CreatePostMutation = (
   { __typename?: 'Mutation' }
   & { createPost: (
     { __typename?: 'Post' }
-    & Pick<Post, 'title' | 'content' | 'creatorId'>
+    & Pick<Post, 'id' | 'title' | 'description' | 'content' | 'creatorId'>
   ) }
 );
 
@@ -178,7 +247,9 @@ export type MeQuery = (
 export const CreatePostDocument = gql`
     mutation createPost($title: String!, $description: String!, $content: String!) {
   createPost(title: $title, description: $description, content: $content) {
+    id
     title
+    description
     content
     creatorId
   }

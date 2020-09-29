@@ -125,6 +125,9 @@ const NavBar = () => {
                 )}
                 {data?.me && (
                     <>
+                        <ActiveNavLink className={classes.link} href='/[user]/new-post' as={`/${data.me.username}/new-post`}>
+                            Create New Post
+                        </ActiveNavLink>
                         <IconButton
                             aria-label="account of current user"
                             aria-controls="menu-appbar"

@@ -1,3 +1,4 @@
+import { gql } from "@apollo/client";
 import { Typography } from "@material-ui/core";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -15,15 +16,59 @@ const Dashboard: NextPage = () => {
         return <Typography variant="h1">-------Loading</Typography>;
     }
 
-    if (!data?.me && !loading) {
-        router.replace("/sign-in");
-    }
+    useEffect(() => {
+        if (!data?.me && !loading) {
+            router.replace("/sign-in");
+        }
+    }, [loading, router, data]);
 
     return (
         <Layout>
             <Typography align="center">Dashboard</Typography>
         </Layout>
     );
+};
+
+// @ts-ignore
+Dashboard.getInitialProps = async ({    apolloClient,
+    res,
+    query,
+    pathname,
+    asPath,
+}) => {
+    const result = await apolloClient.query({
+        query: gql`
+            query me {
+                me {
+                    email
+                    username
+                    created_at
+                    updated_at
+                    avatar
+                }
+            }
+        `,
+    });
+
+
+
+    if(!result.data?.me || result.data?.me.username !== query.user ){
+        res?.writeHead(301, {Location: '/'})
+        res?.end()
+    }
+
+
+    // console.log("asakllkandlk", result);
+    // if (res) {
+    //     res.writeHead(301, { Location: "/" });
+    //     res.end();
+    // }
+
+    // console.log("query", query);
+    // console.log("pathname", pathname);
+    // console.log("asPath", asPath);
+
+    return {};
 };
 
 export default withApollo({ ssr: true })(Dashboard);

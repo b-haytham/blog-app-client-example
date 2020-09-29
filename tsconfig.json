@@ -23,7 +23,7 @@
     "**/*.ts",
     "**/*.tsx",
     "declaration.d.ts", "components/Editor/Editor.jsx"
-  ],
+, "utils/createWithApollo.js"  ],
   "exclude": [
     "node_modules"
   ]
