@@ -1,0 +1,8 @@
+mutation updatePost($input:UpdatePostInputType!, $postId:Float!) {
+  	updatePost(postId: $postId, input: $input){
+    id
+    title
+    description
+    content
+  }
+}

@@ -1,47 +1,67 @@
 import { useState } from "react";
 import { Editor } from "react-draft-wysiwyg";
-import { EditorState, convertToRaw } from "draft-js";
-import { FormControl, Input, InputLabel, FormHelperText, Button, makeStyles} from "@material-ui/core";
-
-
+import { EditorState, convertToRaw, convertFromRaw } from "draft-js";
+import {
+    FormControl,
+    Input,
+    InputLabel,
+    FormHelperText,
+    Button,
+    makeStyles,
+} from "@material-ui/core";
+import { fromObjectToBase64 } from "../../utils/fromObjectToBase64";
 
 const useStyles = makeStyles({
     form: {
-        margin: '20px 0'
-    }
-})
+        margin: "20px 0",
+    },
+});
 
+/*
+
+    props: {
+        isEdit: bool,
+        init: {
+            title
+            description
+            content
+        }
+    }
+
+*/
 
 const Editor2 = (props) => {
+    const classes = useStyles();
 
-    const classes = useStyles()
-
-    const [editorState, setEditorState] = useState(EditorState.createEmpty());
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [category, setCategory] = useState("");
+    const [editorState, setEditorState] = useState(
+        props.isEdit
+            ? EditorState.createWithContent(convertFromRaw(props.init.content))
+            : EditorState.createEmpty()
+    );
+    const [title, setTitle] = useState(props.isEdit ? props.init.title : "");
+    const [description, setDescription] = useState(props.isEdit ? props.init.description : "");
 
     const onEditorStateChange = (editorState) => {
         setEditorState(editorState);
     };
 
+    
+
     const handleSave = () => {
         const editorContent = editorState.getCurrentContent();
-        console.log(convertToRaw(editorContent));
 
         const raw = convertToRaw(editorContent);
-        const base64Content = btoa(JSON.stringify(raw));
-        console.log(base64Content);
+
+        const base64Content = fromObjectToBase64(raw);
 
         const i = {
             title,
             description,
-            category,
+
             content: base64Content,
         };
-        
-        props.onSave(i)
 
+        props.onSave(i);
     };
 
     const uploadImageCallBack = (f) => {
@@ -62,23 +82,19 @@ const Editor2 = (props) => {
                     id="title"
                     aria-describedby="my-title-text"
                 />
-                <FormHelperText id="my-title-text">
-                    Seo
-                </FormHelperText>
+                <FormHelperText id="my-title-text">Seo</FormHelperText>
             </FormControl>
 
             <FormControl className={classes.form} fullWidth>
-                    <InputLabel htmlFor="description">Post Description</InputLabel>
-                    <Input
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        id="description"
-                        aria-describedby="my-description-text"
-                    />
-                    <FormHelperText id="my-description-text">
-                        Seo
-                    </FormHelperText>
-                </FormControl>
+                <InputLabel htmlFor="description">Post Description</InputLabel>
+                <Input
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    id="description"
+                    aria-describedby="my-description-text"
+                />
+                <FormHelperText id="my-description-text">Seo</FormHelperText>
+            </FormControl>
             <Editor
                 editorState={editorState}
                 toolbarClassName="toolbarClassName"
@@ -92,7 +108,10 @@ const Editor2 = (props) => {
                     },
                 }}
             />
-            <Button className={classes.form} onClick={handleSave}> Save </Button>
+            <Button className={classes.form} onClick={handleSave}>
+                {" "}
+                Save{" "}
+            </Button>
         </div>
     );
 };

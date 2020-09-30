@@ -1,0 +1,12 @@
+query getPostById($postId:Float!) {
+  getPostById(postId:$postId){
+    id,
+    title
+    content
+    thumbnail
+    description
+    published
+    tags
+  }
+}
+

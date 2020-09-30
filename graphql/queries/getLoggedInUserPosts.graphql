@@ -1,0 +1,26 @@
+query getLoggedInUserPosts{
+  getLoggedInUserPosts {
+    id
+    title
+    description
+    content
+    creatorId
+    comments{
+      id
+      content
+      creator{
+        id
+        username
+        avatar
+      }
+    }
+    likes{
+      id
+    }
+    thumbnail
+    tags
+    published
+    created_at
+    updated_at   
+  }
+}

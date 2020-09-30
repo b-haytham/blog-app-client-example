@@ -2,12 +2,11 @@ import { Typography } from "@material-ui/core"
 import Layout from "../../components/NavBar/Layout"
 
 import Editor from '../../components/Editor/DynamicLoadedEditor'
-import { useRouter } from "next/router"
-import { useCreatePostMutation, useGetUserByUsernameQuery } from "../../generated/graphql"
-import { useEffect } from "react"
+import { useCreatePostMutation } from "../../generated/graphql"
 import { withApollo } from "../../utils/withApollo"
 import { NextPage } from "next"
 import { gql } from "@apollo/client"
+import { fromBase64ToObject } from "../../utils/fromBase64ToObject"
 
 
 const NewPost: NextPage = ({}) => { 
@@ -25,9 +24,8 @@ const NewPost: NextPage = ({}) => {
             }
         })
 
-        console.log(result)
-        console.log(JSON.parse(atob(result.data?.createPost.content!)))
-        
+        const contentState = fromBase64ToObject(result.data?.createPost.content!)
+        console.log(contentState)        
     }   
 
     return(

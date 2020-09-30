@@ -1,10 +1,13 @@
 import { gql } from "@apollo/client";
-import { Typography } from "@material-ui/core";
+import { Box, Button, Container, Typography } from "@material-ui/core";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import Layout from "../../components/NavBar/Layout";
-import { useGetUserByUsernameQuery, useMeQuery } from "../../generated/graphql";
+import {
+    useGetLoggedInUserPostsQuery,
+    useMeQuery,
+} from "../../generated/graphql";
 
 import { withApollo } from "../../utils/withApollo";
 
@@ -12,25 +15,59 @@ const Dashboard: NextPage = () => {
     const router = useRouter();
     const { data, loading, error } = useMeQuery();
 
-    if (loading) {
+    const {
+        data: postData,
+        loading: postLoading,
+        error: postError,
+    } = useGetLoggedInUserPostsQuery();
+
+    if (loading || postLoading) {
         return <Typography variant="h1">-------Loading</Typography>;
     }
-
-    useEffect(() => {
-        if (!data?.me && !loading) {
-            router.replace("/sign-in");
-        }
-    }, [loading, router, data]);
 
     return (
         <Layout>
             <Typography align="center">Dashboard</Typography>
+
+            <Container>
+                <Box
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="center"
+                    alignItems="center"
+                    flexWrap="wrap"
+                >
+                    {postData?.getLoggedInUserPosts.map((item) => (
+                        <>
+                            <Box key={item.id}>
+                                <Typography align="center" variant="h5">
+                                    {item.title} {item.id}
+                                </Typography>
+                                <Box display="flex">
+                                    <Button
+                                        onClick={() => {
+                                            router.push(
+                                                "/[user]/edit-post/[id]",
+                                                `/${data?.me?.username}/edit-post/${item.id}`
+                                            );
+                                        }}
+                                    >
+                                        Edit
+                                    </Button>
+                                    <Button onClick={() => {}}>Delete</Button>
+                                </Box>
+                            </Box>
+                        </>
+                    ))}
+                </Box>
+            </Container>
         </Layout>
     );
 };
 
-// @ts-ignore
-Dashboard.getInitialProps = async ({    apolloClient,
+Dashboard.getInitialProps = async ({
+    // @ts-ignore
+    apolloClient,
     res,
     query,
     pathname,
@@ -50,13 +87,10 @@ Dashboard.getInitialProps = async ({    apolloClient,
         `,
     });
 
-
-
-    if(!result.data?.me || result.data?.me.username !== query.user ){
-        res?.writeHead(301, {Location: '/'})
-        res?.end()
+    if (!result.data?.me || result.data?.me.username !== query.user) {
+        res?.writeHead(301, { Location: "/" });
+        res?.end();
     }
-
 
     // console.log("asakllkandlk", result);
     // if (res) {
