@@ -1,0 +1,15 @@
+query getCommentsByPostId($postId:Float!){
+  getCommentsByPostId(postId:$postId) {
+    id
+    content
+    created_at
+    updated_at
+    creatorId
+    creator{
+      id
+      username
+      avatar
+    }
+    
+  }
+}

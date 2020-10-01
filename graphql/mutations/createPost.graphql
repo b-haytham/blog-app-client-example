@@ -1,5 +1,5 @@
-mutation createPost($title: String!, $description: String!, $content: String!) {
-    createPost(title: $title, description: $description, content: $content) {
+mutation createPost($title: String!, $description: String!, $content: String!, $publish: Boolean!) {
+    createPost(title: $title, description: $description, content: $content, publish: $publish) {
         id
         title
         description

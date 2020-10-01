@@ -1,0 +1,26 @@
+query getPublicPostById($postId:Float!){
+  getPublicPostById(postId: $postId){
+    id
+    title
+    description
+    thumbnail
+    content
+    tags
+    created_at
+    updated_at
+    creator{
+      id
+      username
+      avatar
+    }
+    comments {
+      id
+      content
+      created_at
+      creatorId
+      likes {
+        id
+      }
+    }
+  }
+}

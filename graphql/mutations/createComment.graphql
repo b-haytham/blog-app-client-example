@@ -1,0 +1,8 @@
+mutation createComment($postId: Float!, $content:String!) {
+	createComment(content:$content, postId: $postId){
+    id
+    content
+    created_at
+    updated_at
+  }
+}

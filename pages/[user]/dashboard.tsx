@@ -70,8 +70,6 @@ Dashboard.getInitialProps = async ({
     apolloClient,
     res,
     query,
-    pathname,
-    asPath,
 }) => {
     const result = await apolloClient.query({
         query: gql`

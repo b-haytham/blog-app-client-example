@@ -10,6 +10,7 @@ import {
     makeStyles,
 } from "@material-ui/core";
 import { fromObjectToBase64 } from "../../utils/fromObjectToBase64";
+import { fromBase64ToObject } from "../../utils/fromBase64ToObject";
 
 const useStyles = makeStyles({
     form: {
@@ -39,13 +40,14 @@ const Editor2 = (props) => {
             : EditorState.createEmpty()
     );
     const [title, setTitle] = useState(props.isEdit ? props.init.title : "");
-    const [description, setDescription] = useState(props.isEdit ? props.init.description : "");
+    const [description, setDescription] = useState(
+        props.isEdit ? props.init.description : ""
+    );
 
     const onEditorStateChange = (editorState) => {
         setEditorState(editorState);
     };
 
-    
 
     const handleSave = () => {
         const editorContent = editorState.getCurrentContent();
@@ -54,14 +56,22 @@ const Editor2 = (props) => {
 
         const base64Content = fromObjectToBase64(raw);
 
-        const i = {
-            title,
-            description,
+        let data;
 
-            content: base64Content,
-        };
+        if (props.isComment) {
+            data = {
+                content: base64Content,
+            };
+        } else {
+            data = {
+                title,
+                description,
 
-        props.onSave(i);
+                content: base64Content,
+            };
+        }
+
+        props.onSave(data);
     };
 
     const uploadImageCallBack = (f) => {
@@ -74,27 +84,35 @@ const Editor2 = (props) => {
 
     return (
         <div style={{ width: "100%" }}>
-            <FormControl className={classes.form} fullWidth>
-                <InputLabel htmlFor="title">Post Title</InputLabel>
-                <Input
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    id="title"
-                    aria-describedby="my-title-text"
-                />
-                <FormHelperText id="my-title-text">Seo</FormHelperText>
-            </FormControl>
+            {!props.isComment && (
+                <>
+                    <FormControl className={classes.form} fullWidth>
+                        <InputLabel htmlFor="title">Post Title</InputLabel>
+                        <Input
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            id="title"
+                            aria-describedby="my-title-text"
+                        />
+                        <FormHelperText id="my-title-text">Seo</FormHelperText>
+                    </FormControl>
 
-            <FormControl className={classes.form} fullWidth>
-                <InputLabel htmlFor="description">Post Description</InputLabel>
-                <Input
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    id="description"
-                    aria-describedby="my-description-text"
-                />
-                <FormHelperText id="my-description-text">Seo</FormHelperText>
-            </FormControl>
+                    <FormControl className={classes.form} fullWidth>
+                        <InputLabel htmlFor="description">
+                            Post Description
+                        </InputLabel>
+                        <Input
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            id="description"
+                            aria-describedby="my-description-text"
+                        />
+                        <FormHelperText id="my-description-text">
+                            Seo
+                        </FormHelperText>
+                    </FormControl>
+                </>
+            )}
             <Editor
                 editorState={editorState}
                 toolbarClassName="toolbarClassName"

@@ -5,9 +5,11 @@ import { useGetPostByIdQuery, useMeQuery, useUpdatePostMutation } from "../../..
 import { withApollo } from "../../../utils/withApollo";
 import Editor from '../../../components/Editor/DynamicLoadedEditor'
 import { fromBase64ToObject } from "../../../utils/fromBase64ToObject";
+import { NextPage } from "next";
+import { gql } from "@apollo/client";
 
 
-const EditPost = () => {
+const EditPost: NextPage = () => {
     const router = useRouter();
 
     const {data: meData, loading: meLoading, error: meError} = useMeQuery()
@@ -61,5 +63,45 @@ const EditPost = () => {
         </Layout>
     );
 };
+
+EditPost.getInitialProps = async ({
+    // @ts-ignore
+    apolloClient,
+    res,
+    query,
+}) => {
+    const result = await apolloClient.query({
+        query: gql`
+            query me {
+                me {
+                    email
+                    username
+                    created_at
+                    updated_at
+                    avatar
+                }
+            }
+        `,
+    });
+
+    if (!result.data?.me || result.data?.me.username !== query.user) {
+        res?.writeHead(301, { Location: "/" });
+        res?.end();
+    }
+
+    // console.log("asakllkandlk", result);
+    // if (res) {
+    //     res.writeHead(301, { Location: "/" });
+    //     res.end();
+    // }
+
+    // console.log("query", query);
+    // console.log("pathname", pathname);
+    // console.log("asPath", asPath);
+
+    return {};
+};
+
+
 
 export default withApollo({ssr:true})(EditPost);

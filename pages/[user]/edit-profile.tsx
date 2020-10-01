@@ -53,9 +53,9 @@ EditProfile.getInitialProps = async ({    apolloClient,
     //     res.end();
     // }
 
-    console.log("query", query);
-    console.log("pathname", pathname);
-    console.log("asPath", asPath);
+    // console.log("query", query);
+    // console.log("pathname", pathname);
+    // console.log("asPath", asPath);
 
     return {};
 };

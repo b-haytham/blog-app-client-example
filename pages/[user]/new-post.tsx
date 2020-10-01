@@ -16,16 +16,14 @@ const NewPost: NextPage = ({}) => {
 
 
     const handleSave =async (data: any) => {
-        const result = await createPost({
+         await createPost({
             variables: {
                 title: data.title as string,
                 description: data.description as string,
-                content: data.content as string
+                content: data.content as string,
+                publish: true
             }
         })
-
-        const contentState = fromBase64ToObject(result.data?.createPost.content!)
-        console.log(contentState)        
     }   
 
     return(
@@ -36,8 +34,9 @@ const NewPost: NextPage = ({}) => {
     );
 }
 
-// @ts-ignore
-NewPost.getInitialProps = async ({    apolloClient,
+NewPost.getInitialProps = async ({    
+    // @ts-ignore
+    apolloClient,
     res,
     query,
 }) => {
