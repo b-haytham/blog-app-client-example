@@ -1,0 +1,3 @@
+mutation dislike($parent: String!, $parentId: Float!){
+  dislike(parent: $parent, parentId: $parentId)
+}

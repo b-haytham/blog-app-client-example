@@ -91,6 +91,7 @@ export type Like = {
   parent: Scalars['String'];
   postId?: Maybe<Scalars['Float']>;
   commentId?: Maybe<Scalars['Float']>;
+  creatorId: Scalars['Float'];
   post: Post;
   comment: Comment;
   creator: User;
@@ -138,7 +139,6 @@ export type MutationCreateUserArgs = {
 
 export type MutationUpdateUserArgs = {
   input: UpdateUserInputType;
-  userId: Scalars['Float'];
 };
 
 
@@ -201,7 +201,7 @@ export type MutationDislikeArgs = {
 };
 
 export type UpdateUserInputType = {
-  usename: Scalars['String'];
+  username: Scalars['String'];
   first_name?: Maybe<Scalars['String']>;
   last_name?: Maybe<Scalars['String']>;
   avatar?: Maybe<Scalars['String']>;
@@ -265,6 +265,38 @@ export type CreateUserMutation = (
   ) }
 );
 
+export type DeletePostMutationVariables = Exact<{
+  postId: Scalars['Float'];
+}>;
+
+
+export type DeletePostMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deletePost'>
+);
+
+export type DislikeMutationVariables = Exact<{
+  parent: Scalars['String'];
+  parentId: Scalars['Float'];
+}>;
+
+
+export type DislikeMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'dislike'>
+);
+
+export type LikeMutationVariables = Exact<{
+  parent: Scalars['String'];
+  parentId: Scalars['Float'];
+}>;
+
+
+export type LikeMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'like'>
+);
+
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -301,6 +333,19 @@ export type UpdatePostMutation = (
   ) }
 );
 
+export type UpdateUserMutationVariables = Exact<{
+  input: UpdateUserInputType;
+}>;
+
+
+export type UpdateUserMutation = (
+  { __typename?: 'Mutation' }
+  & { updateUser: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username' | 'github' | 'facebook' | 'first_name' | 'last_name'>
+  ) }
+);
+
 export type GetCommentsByPostIdQueryVariables = Exact<{
   postId: Scalars['Float'];
 }>;
@@ -328,14 +373,10 @@ export type GetLoggedInUserPostsQuery = (
     & Pick<Post, 'id' | 'title' | 'description' | 'content' | 'creatorId' | 'thumbnail' | 'tags' | 'published' | 'created_at' | 'updated_at'>
     & { comments: Array<(
       { __typename?: 'Comment' }
-      & Pick<Comment, 'id' | 'content'>
-      & { creator: (
-        { __typename?: 'User' }
-        & Pick<User, 'id' | 'username' | 'avatar'>
-      ) }
+      & Pick<Comment, 'id' | 'content' | 'creatorId'>
     )>, likes: Array<(
       { __typename?: 'Like' }
-      & Pick<Like, 'id'>
+      & Pick<Like, 'id' | 'creatorId'>
     )> }
   )> }
 );
@@ -416,7 +457,7 @@ export type MeQuery = (
   { __typename?: 'Query' }
   & { me?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'email' | 'username' | 'created_at' | 'updated_at' | 'avatar'>
+    & Pick<User, 'id' | 'email' | 'username' | 'first_name' | 'last_name' | 'created_at' | 'updated_at' | 'avatar' | 'studied_at' | 'work_at' | 'github' | 'facebook' | 'tweeter'>
   )> }
 );
 
@@ -534,6 +575,98 @@ export function useCreateUserMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutation>;
 export type CreateUserMutationResult = Apollo.MutationResult<CreateUserMutation>;
 export type CreateUserMutationOptions = Apollo.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;
+export const DeletePostDocument = gql`
+    mutation deletePost($postId: Float!) {
+  deletePost(postId: $postId)
+}
+    `;
+export type DeletePostMutationFn = Apollo.MutationFunction<DeletePostMutation, DeletePostMutationVariables>;
+
+/**
+ * __useDeletePostMutation__
+ *
+ * To run a mutation, you first call `useDeletePostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeletePostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deletePostMutation, { data, loading, error }] = useDeletePostMutation({
+ *   variables: {
+ *      postId: // value for 'postId'
+ *   },
+ * });
+ */
+export function useDeletePostMutation(baseOptions?: Apollo.MutationHookOptions<DeletePostMutation, DeletePostMutationVariables>) {
+        return Apollo.useMutation<DeletePostMutation, DeletePostMutationVariables>(DeletePostDocument, baseOptions);
+      }
+export type DeletePostMutationHookResult = ReturnType<typeof useDeletePostMutation>;
+export type DeletePostMutationResult = Apollo.MutationResult<DeletePostMutation>;
+export type DeletePostMutationOptions = Apollo.BaseMutationOptions<DeletePostMutation, DeletePostMutationVariables>;
+export const DislikeDocument = gql`
+    mutation dislike($parent: String!, $parentId: Float!) {
+  dislike(parent: $parent, parentId: $parentId)
+}
+    `;
+export type DislikeMutationFn = Apollo.MutationFunction<DislikeMutation, DislikeMutationVariables>;
+
+/**
+ * __useDislikeMutation__
+ *
+ * To run a mutation, you first call `useDislikeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDislikeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [dislikeMutation, { data, loading, error }] = useDislikeMutation({
+ *   variables: {
+ *      parent: // value for 'parent'
+ *      parentId: // value for 'parentId'
+ *   },
+ * });
+ */
+export function useDislikeMutation(baseOptions?: Apollo.MutationHookOptions<DislikeMutation, DislikeMutationVariables>) {
+        return Apollo.useMutation<DislikeMutation, DislikeMutationVariables>(DislikeDocument, baseOptions);
+      }
+export type DislikeMutationHookResult = ReturnType<typeof useDislikeMutation>;
+export type DislikeMutationResult = Apollo.MutationResult<DislikeMutation>;
+export type DislikeMutationOptions = Apollo.BaseMutationOptions<DislikeMutation, DislikeMutationVariables>;
+export const LikeDocument = gql`
+    mutation like($parent: String!, $parentId: Float!) {
+  like(parent: $parent, parentId: $parentId)
+}
+    `;
+export type LikeMutationFn = Apollo.MutationFunction<LikeMutation, LikeMutationVariables>;
+
+/**
+ * __useLikeMutation__
+ *
+ * To run a mutation, you first call `useLikeMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLikeMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [likeMutation, { data, loading, error }] = useLikeMutation({
+ *   variables: {
+ *      parent: // value for 'parent'
+ *      parentId: // value for 'parentId'
+ *   },
+ * });
+ */
+export function useLikeMutation(baseOptions?: Apollo.MutationHookOptions<LikeMutation, LikeMutationVariables>) {
+        return Apollo.useMutation<LikeMutation, LikeMutationVariables>(LikeDocument, baseOptions);
+      }
+export type LikeMutationHookResult = ReturnType<typeof useLikeMutation>;
+export type LikeMutationResult = Apollo.MutationResult<LikeMutation>;
+export type LikeMutationOptions = Apollo.BaseMutationOptions<LikeMutation, LikeMutationVariables>;
 export const LogoutDocument = gql`
     mutation Logout {
   logout
@@ -636,6 +769,43 @@ export function useUpdatePostMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdatePostMutationHookResult = ReturnType<typeof useUpdatePostMutation>;
 export type UpdatePostMutationResult = Apollo.MutationResult<UpdatePostMutation>;
 export type UpdatePostMutationOptions = Apollo.BaseMutationOptions<UpdatePostMutation, UpdatePostMutationVariables>;
+export const UpdateUserDocument = gql`
+    mutation updateUser($input: UpdateUserInputType!) {
+  updateUser(input: $input) {
+    id
+    username
+    github
+    facebook
+    first_name
+    last_name
+  }
+}
+    `;
+export type UpdateUserMutationFn = Apollo.MutationFunction<UpdateUserMutation, UpdateUserMutationVariables>;
+
+/**
+ * __useUpdateUserMutation__
+ *
+ * To run a mutation, you first call `useUpdateUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateUserMutation, { data, loading, error }] = useUpdateUserMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<UpdateUserMutation, UpdateUserMutationVariables>) {
+        return Apollo.useMutation<UpdateUserMutation, UpdateUserMutationVariables>(UpdateUserDocument, baseOptions);
+      }
+export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
+export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
+export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
 export const GetCommentsByPostIdDocument = gql`
     query getCommentsByPostId($postId: Float!) {
   getCommentsByPostId(postId: $postId) {
@@ -689,14 +859,11 @@ export const GetLoggedInUserPostsDocument = gql`
     comments {
       id
       content
-      creator {
-        id
-        username
-        avatar
-      }
+      creatorId
     }
     likes {
       id
+      creatorId
     }
     thumbnail
     tags
@@ -920,9 +1087,16 @@ export const MeDocument = gql`
     id
     email
     username
+    first_name
+    last_name
     created_at
     updated_at
     avatar
+    studied_at
+    work_at
+    github
+    facebook
+    tweeter
   }
 }
     `;

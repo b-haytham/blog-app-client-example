@@ -1,9 +1,11 @@
-import { Box, Typography } from "@material-ui/core";
+import { Box, Typography, Button } from "@material-ui/core";
 import { useRouter } from "next/router";
 import Layout from "../../components/NavBar/Layout";
 import {
     useCreateCommentMutation,
+    useDislikeMutation,
     useGetPublicPostByIdQuery,
+    useLikeMutation,
     useMeQuery,
 } from "../../generated/graphql";
 
@@ -24,6 +26,11 @@ const Post = () => {
         },
     });
 
+    const [likePost] = useLikeMutation()
+
+    const [dislikePost] = useDislikeMutation()
+
+
     const [createComment] = useCreateCommentMutation();
 
     if (loading || meLoading) {
@@ -34,14 +41,20 @@ const Post = () => {
         );
     }
 
-    const html = draftjsToHtml(
-        //@ts-ignore
-        fromBase64ToObject(data?.getPublicPostById.content!)
-    );
+    if (error) {
+        router.push("/");
+    }
+
+    const html = data?.getPublicPostById
+        ? draftjsToHtml(
+              //@ts-ignore
+              fromBase64ToObject(data?.getPublicPostById.content!)
+          )
+        : "<p></p>";
 
     const handleSave = async (data: any) => {
         console.log(data);
-
+        console.log(router);
         const result = await createComment({
             variables: {
                 postId: +router.query.id!,
@@ -60,14 +73,48 @@ const Post = () => {
                 {data?.getPublicPostById.description}
             </Typography>
 
-            <Box
-                margin="80px 0"
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                justifyContent="center"
-                dangerouslySetInnerHTML={{ __html: html }}
-            />
+            {!error && data?.getPublicPostById && (
+                <>
+                    <Box
+                        margin="80px 0"
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center"
+                        justifyContent="center"
+                        dangerouslySetInnerHTML={{ __html: html }}
+                    />
+                    <Button
+                        variant="outlined"
+                        color="primary"
+                        onClick={async () => {
+                            const result = await likePost({
+                                variables: {
+                                    parent: "POST",
+                                    parentId: +data.getPublicPostById.id,
+                                },
+                            });
+                            console.log(result);
+                        }}
+                    >
+                        like
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        color="secondary"
+                        onClick={async () => {
+                            const result = await dislikePost({
+                                variables: {
+                                    parent: "POST",
+                                    parentId: +data.getPublicPostById.id,
+                                },
+                            });
+                            console.log(result);
+                        }}
+                    >
+                        dislike
+                    </Button>
+                </>
+            )}
 
             {meData?.me && <Editor isComment onSave={handleSave} />}
 

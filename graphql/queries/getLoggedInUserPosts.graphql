@@ -8,14 +8,11 @@ query getLoggedInUserPosts{
     comments{
       id
       content
-      creator{
-        id
-        username
-        avatar
-      }
+      creatorId
     }
     likes{
       id
+      creatorId
     }
     thumbnail
     tags

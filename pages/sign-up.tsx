@@ -67,7 +67,6 @@ const SignUp = () => {
     return (
         <Layout>
             <Typography align="center" variant="h1">
-                {" "}
                 Sign Up
             </Typography>
             <form onSubmit={handleSubmit} className={classes.form}>

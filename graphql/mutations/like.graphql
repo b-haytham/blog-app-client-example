@@ -1,0 +1,3 @@
+mutation like ($parent: String!, $parentId: Float!) {
+  like(parent:$parent, parentId: $parentId)
+}

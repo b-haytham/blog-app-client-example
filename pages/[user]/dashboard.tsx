@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import Layout from "../../components/NavBar/Layout";
 import {
+    useDeletePostMutation,
     useGetLoggedInUserPostsQuery,
     useMeQuery,
 } from "../../generated/graphql";
@@ -15,15 +16,20 @@ const Dashboard: NextPage = () => {
     const router = useRouter();
     const { data, loading, error } = useMeQuery();
 
+    const [deletePost] = useDeletePostMutation()
+    
     const {
         data: postData,
         loading: postLoading,
         error: postError,
     } = useGetLoggedInUserPostsQuery();
 
+
     if (loading || postLoading) {
         return <Typography variant="h1">-------Loading</Typography>;
     }
+
+    console.log(postData)    
 
     return (
         <Layout>
@@ -54,7 +60,15 @@ const Dashboard: NextPage = () => {
                                     >
                                         Edit
                                     </Button>
-                                    <Button onClick={() => {}}>Delete</Button>
+                                    <Button onClick={async() => {
+                                        const result = await deletePost({
+                                            variables: {
+                                                postId: +item.id
+                                            }
+
+                                        })
+                                        console.log(result)
+                                    }}>Delete</Button>
                                 </Box>
                             </Box>
                         </>
