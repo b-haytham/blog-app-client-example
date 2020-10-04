@@ -7,6 +7,7 @@ import {
     Menu,
     MenuItem,
     IconButton,
+    Box,
 } from "@material-ui/core";
 
 import AccountCircle from "@material-ui/icons/AccountCircle";
@@ -16,12 +17,13 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { useLogoutMutation, useMeQuery } from "../../generated/graphql";
 import { withApollo } from "../../utils/withApollo";
+import Logo from "../Logo";
 import ActiveNavLink from "./ActiveNavLink";
 
 const useStyles = makeStyles({
     root: {
         height: "80px",
-        backgroundColor: "beige",
+        backgroundColor: "#ebf0ec",
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
@@ -50,7 +52,7 @@ const useStyles = makeStyles({
 
 const NavBar = () => {
     const classes = useStyles();
-    const router = useRouter()
+    const router = useRouter();
     const apolloClient = useApolloClient();
 
     const { data, error, loading } = useMeQuery();
@@ -86,8 +88,10 @@ const NavBar = () => {
 
     return (
         <AppBar className={classes.root} position="static">
-            <Typography className={classes.logo}>Logo</Typography>
-
+            <Box display='flex' alignItems='center' justifyContent='center'> 
+                <Logo isNav />
+                <Typography className={classes.logo}>Logo</Typography>
+            </Box>
             <Toolbar>
                 <ActiveNavLink
                     className={classes.link}
@@ -125,7 +129,11 @@ const NavBar = () => {
                 )}
                 {data?.me && (
                     <>
-                        <ActiveNavLink className={classes.link} href='/[user]/new-post' as={`/${data.me.username}/new-post`}>
+                        <ActiveNavLink
+                            className={classes.link}
+                            href="/[user]/new-post"
+                            as={`/${data.me.username}/new-post`}
+                        >
                             Create New Post
                         </ActiveNavLink>
                         <IconButton
@@ -152,15 +160,36 @@ const NavBar = () => {
                             open={isMenuOpen}
                             onClose={handleMenuClose}
                         >
-                            <MenuItem onClick={()=>{
-                                router.push('/[user]', `/${data.me?.username}`)
-                            }} >Profile</MenuItem>
-                            <MenuItem onClick={()=>{
-                                router.push('/[user]/dashboard', `/${data.me?.username}/dashboard`)
-                            }} >Dashboard</MenuItem>
-                            <MenuItem onClick={()=> {
-                                router.push('/[user]/edit-profile', `/${data.me?.username}/edit-profile`)
-                            }} >Settings</MenuItem>
+                            <MenuItem
+                                onClick={() => {
+                                    router.push(
+                                        "/[user]",
+                                        `/${data.me?.username}`
+                                    );
+                                }}
+                            >
+                                Profile
+                            </MenuItem>
+                            <MenuItem
+                                onClick={() => {
+                                    router.push(
+                                        "/[user]/dashboard",
+                                        `/${data.me?.username}/dashboard`
+                                    );
+                                }}
+                            >
+                                Dashboard
+                            </MenuItem>
+                            <MenuItem
+                                onClick={() => {
+                                    router.push(
+                                        "/[user]/edit-profile",
+                                        `/${data.me?.username}/edit-profile`
+                                    );
+                                }}
+                            >
+                                Settings
+                            </MenuItem>
                             <MenuItem
                                 onClick={async () => {
                                     await logout();

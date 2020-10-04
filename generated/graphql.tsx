@@ -315,7 +315,7 @@ export type SignInMutation = (
   { __typename?: 'Mutation' }
   & { signInUser: (
     { __typename?: 'User' }
-    & Pick<User, 'username' | 'email' | 'created_at' | 'updated_at' | 'avatar'>
+    & Pick<User, 'id' | 'email' | 'username' | 'first_name' | 'last_name' | 'created_at' | 'updated_at' | 'avatar' | 'studied_at' | 'work_at' | 'github' | 'facebook' | 'tweeter'>
   ) }
 );
 
@@ -699,11 +699,19 @@ export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, L
 export const SignInDocument = gql`
     mutation signIn($email: String!, $password: String!) {
   signInUser(email: $email, password: $password) {
-    username
+    id
     email
+    username
+    first_name
+    last_name
     created_at
     updated_at
     avatar
+    studied_at
+    work_at
+    github
+    facebook
+    tweeter
   }
 }
     `;

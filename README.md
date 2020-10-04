@@ -9,6 +9,8 @@ npm run dev
 # or
 yarn dev
 ```
+<a href='https://www.freepik.com/vectors/logo'>Logo vector created by eightonesix - www.freepik.com</a>
+
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
