@@ -371,7 +371,10 @@ export type GetLoggedInUserPostsQuery = (
   & { getLoggedInUserPosts: Array<(
     { __typename?: 'Post' }
     & Pick<Post, 'id' | 'title' | 'description' | 'content' | 'creatorId' | 'thumbnail' | 'tags' | 'published' | 'created_at' | 'updated_at'>
-    & { comments: Array<(
+    & { creator: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username' | 'avatar'>
+    ), comments: Array<(
       { __typename?: 'Comment' }
       & Pick<Comment, 'id' | 'content' | 'creatorId'>
     )>, likes: Array<(
@@ -425,11 +428,17 @@ export type GetPublicPostsQuery = (
   { __typename?: 'Query' }
   & { getPublicPosts: Array<(
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'title' | 'description' | 'thumbnail' | 'tags' | 'created_at'>
+    & Pick<Post, 'id' | 'title' | 'description' | 'content' | 'creatorId' | 'thumbnail' | 'tags' | 'published' | 'created_at' | 'updated_at'>
     & { creator: (
       { __typename?: 'User' }
-      & Pick<User, 'id' | 'username'>
-    ) }
+      & Pick<User, 'id' | 'username' | 'avatar'>
+    ), comments: Array<(
+      { __typename?: 'Comment' }
+      & Pick<Comment, 'id' | 'content' | 'creatorId'>
+    )>, likes: Array<(
+      { __typename?: 'Like' }
+      & Pick<Like, 'id' | 'creatorId'>
+    )> }
   )> }
 );
 
@@ -864,6 +873,11 @@ export const GetLoggedInUserPostsDocument = gql`
     description
     content
     creatorId
+    creator {
+      id
+      username
+      avatar
+    }
     comments {
       id
       content
@@ -1005,13 +1019,27 @@ export const GetPublicPostsDocument = gql`
     id
     title
     description
-    thumbnail
-    tags
+    content
+    creatorId
     creator {
       id
       username
+      avatar
     }
+    comments {
+      id
+      content
+      creatorId
+    }
+    likes {
+      id
+      creatorId
+    }
+    thumbnail
+    tags
+    published
     created_at
+    updated_at
   }
 }
     `;

@@ -4,7 +4,6 @@ import { AppProps } from "next/app";
 import Head from "next/head";
 
 import "../styles/editor.css";
-
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import {
     CssBaseline,

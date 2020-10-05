@@ -2,15 +2,29 @@
 
 query getPublicPosts{
   getPublicPosts{
-    id
-    title
-    description
-		thumbnail
-    tags
-    creator{
       id
-      username
-    }
-    created_at
+      title
+      description
+      content
+      creatorId
+      creator{
+        id
+        username
+        avatar
+      }
+      comments{
+        id
+        content
+        creatorId
+      }
+      likes{
+        id
+        creatorId
+      }
+      thumbnail
+      tags
+      published
+      created_at
+      updated_at   
   }
-}
+} 

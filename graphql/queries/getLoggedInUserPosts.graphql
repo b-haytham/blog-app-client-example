@@ -5,6 +5,11 @@ query getLoggedInUserPosts{
     description
     content
     creatorId
+    creator{
+        id
+        username
+        avatar
+    }
     comments{
       id
       content

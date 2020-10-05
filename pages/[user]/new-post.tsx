@@ -1,4 +1,4 @@
-import { Typography } from "@material-ui/core"
+import { Box, makeStyles, Typography } from "@material-ui/core"
 import Layout from "../../components/NavBar/Layout"
 
 import Editor from '../../components/Editor/DynamicLoadedEditor'
@@ -9,7 +9,15 @@ import { gql } from "@apollo/client"
 import { fromBase64ToObject } from "../../utils/fromBase64ToObject"
 
 
+const useStyles = makeStyles({
+    container: {
+        backgroundColor: 'white'
+    }
+})
+
 const NewPost: NextPage = ({}) => { 
+    const classes = useStyles()
+
 
     const [createPost] = useCreatePostMutation()
 
@@ -28,8 +36,10 @@ const NewPost: NextPage = ({}) => {
 
     return(
         <Layout>
+            <Box  className={classes.container}>
             <Typography align='center' variant='h3' component='h3'>Create New Post</Typography>
             <Editor onSave={handleSave} />
+            </Box>
         </Layout>
     );
 }

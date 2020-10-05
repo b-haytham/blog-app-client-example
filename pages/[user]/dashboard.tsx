@@ -1,9 +1,11 @@
 import { gql } from "@apollo/client";
-import { Box, Button, Container, Typography } from "@material-ui/core";
+import { Box, Button, Container, makeStyles, Typography } from "@material-ui/core";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import Layout from "../../components/NavBar/Layout";
+import PostsContainer from "../../components/PostsContainer/PostsContainer";
+import SearchBar from "../../components/SearchBar/SearchBar";
 import {
     useDeletePostMutation,
     useGetLoggedInUserPostsQuery,
@@ -12,69 +14,58 @@ import {
 
 import { withApollo } from "../../utils/withApollo";
 
+
+
+
+const useStyles = makeStyles({
+    line: {
+        margin: "20px auto 50px",
+        color: "black",
+        width: "50%",
+    },
+})
+
 const Dashboard: NextPage = () => {
+    const classes = useStyles()
     const router = useRouter();
+
+
     const { data, loading, error } = useMeQuery();
 
-    const [deletePost] = useDeletePostMutation()
-    
+
     const {
         data: postData,
         loading: postLoading,
         error: postError,
     } = useGetLoggedInUserPostsQuery();
 
-
     if (loading || postLoading) {
         return <Typography variant="h1">-------Loading</Typography>;
     }
 
-    console.log(postData)    
+    console.log(postData);
+    console.log(postError)
 
     return (
         <Layout>
-            <Typography align="center">Dashboard</Typography>
+            <Box display="flex" flexDirection="column" justifyContent="center">
 
-            <Container>
-                <Box
-                    display="flex"
-                    flexDirection="column"
-                    justifyContent="center"
-                    alignItems="center"
-                    flexWrap="wrap"
-                >
-                    {postData?.getLoggedInUserPosts.map((item) => (
-                        <>
-                            <Box key={item.id}>
-                                <Typography align="center" variant="h5">
-                                    {item.title} {item.id}
-                                </Typography>
-                                <Box display="flex">
-                                    <Button
-                                        onClick={() => {
-                                            router.push(
-                                                "/[user]/edit-post/[id]",
-                                                `/${data?.me?.username}/edit-post/${item.id}`
-                                            );
-                                        }}
-                                    >
-                                        Edit
-                                    </Button>
-                                    <Button onClick={async() => {
-                                        const result = await deletePost({
-                                            variables: {
-                                                postId: +item.id
-                                            }
-
-                                        })
-                                        console.log(result)
-                                    }}>Delete</Button>
-                                </Box>
-                            </Box>
-                        </>
-                    ))}
+            <Box margin="50px auto 50px">
+                    <SearchBar
+                        placeholder="search"
+                    />
                 </Box>
-            </Container>
+
+                <hr className={classes.line} />
+
+
+                { postData?.getLoggedInUserPosts && (
+                    <Box margin='20px auto'>
+                        <PostsContainer data={{...postData, kind: 'private'}}/>
+                    </Box>
+
+                )}
+            </Box>
         </Layout>
     );
 };
