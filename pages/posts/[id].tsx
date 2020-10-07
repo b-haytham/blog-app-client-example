@@ -52,6 +52,7 @@ const Post = () => {
           )
         : "<p></p>";
 
+    console.log(html)    
     const handleSave = async (data: any) => {
         console.log(data);
         console.log(router);

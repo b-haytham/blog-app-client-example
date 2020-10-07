@@ -3,8 +3,13 @@ import { ThemeProvider, CSSReset, theme } from "@chakra-ui/core";
 import { AppProps } from "next/app";
 import Head from "next/head";
 
-import "../styles/editor.css";
+
+
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+
+import "../styles/editor.css";
+
+
 import {
     CssBaseline,
     ThemeProvider as MThemeProvider,

@@ -13,6 +13,7 @@ import {
     Switch,
     Select,
     MenuItem,
+    Typography,
 } from "@material-ui/core";
 import { fromObjectToBase64 } from "../../utils/fromObjectToBase64";
 import { fromBase64ToObject } from "../../utils/fromBase64ToObject";
@@ -20,7 +21,15 @@ import { fromBase64ToObject } from "../../utils/fromBase64ToObject";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import SaveIcon from "@material-ui/icons/Save";
+import ImageIcon from "@material-ui/icons/Image";
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
+
+import { DropzoneDialog } from "material-ui-dropzone";
+import { blockStyle } from "./blockStyle";
+
+import { TagInput } from "reactjs-tag-input";
+import { wrapperStyles, inputStyles, tagStyles } from "./TagComponentStyles";
 
 const useStyles = makeStyles({
     container: {
@@ -42,7 +51,7 @@ const useStyles = makeStyles({
         justifyContent: "center",
     },
     button: {
-        margin: "15px ",
+        margin: "15px",
         backgroundColor: "black",
         color: "white",
         fontWeight: "bolder",
@@ -52,6 +61,8 @@ const useStyles = makeStyles({
             border: "2px solid black",
         },
     },
+    thumbnail: {},
+    tags: {},
 });
 
 /*
@@ -69,6 +80,8 @@ const useStyles = makeStyles({
 
 const Editor2 = (props) => {
     const classes = useStyles();
+
+    // SHOW FORM
     const [showForm, setShowForm] = useState(false);
 
     const [editorState, setEditorState] = useState(
@@ -76,19 +89,37 @@ const Editor2 = (props) => {
             ? EditorState.createWithContent(convertFromRaw(props.init.content))
             : EditorState.createEmpty()
     );
+
+    //TITLE INPUT
     const [title, setTitle] = useState(props.isEdit ? props.init.title : "");
+
+    //DESCRIPTION INPUT
     const [description, setDescription] = useState(
         props.isEdit ? props.init.description : ""
     );
 
+    //TAGS INPUT
+    const [tags, setTags] = useState(props.isEdit ? props.init.tags : []);
+
+    //PUBLISH SWITCH
     const [publish, setPublish] = useState(
         props.isEdit ? props.init.publish : false
     );
 
+    // DROP ZONE MODEL
+    const [openDropzone, setOpenDropzone] = useState(false);
+
+    // THUMBNAIL UPLOAD
     const [thumbnail, setThumbnail] = useState(
-        props.isEdit ? props.init.thumbnail : null
+        props.isEdit ? props.init.thumbnail : "/default-pic.png"
     );
 
+    // PREVIEW UPLOADED IMAGEE
+    const [preview, setPreview] = useState(
+        props.isEdit ? props.init.thumbnail : "/default-pic.png"
+    );
+
+    // CATEGORY SELECT INPUT
     const [category, setCategory] = useState(
         props.isEdit ? props.init.category : ""
     );
@@ -103,6 +134,7 @@ const Editor2 = (props) => {
         const raw = convertToRaw(editorContent);
 
         const base64Content = fromObjectToBase64(raw);
+        const tagsArray = tags.map((t) => t.displayValue);
 
         let data;
 
@@ -114,9 +146,14 @@ const Editor2 = (props) => {
             data = {
                 title,
                 description,
-
                 content: base64Content,
+                tags: tagsArray,
+                published: publish,
             };
+        }
+
+        if(!props.isEdit && thumbnail !== '/default-pic.png'){
+            data.thumbnail = thumbnail
         }
 
         props.onSave(data);
@@ -130,14 +167,22 @@ const Editor2 = (props) => {
         });
     };
 
-    const onDrop = (f) => {
-        console.log(f);
+    const onDropSave = (f) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(f[0]);
+        reader.onloadend = () => {
+            setPreview(reader.result);
+            setThumbnail(reader.result);
+            setOpenDropzone(false);
+        };
     };
 
     return (
         <Box className={classes.container}>
-            this.
             <Editor
+                stripPastedStyles
+                //customBlockRenderFunc={customBlock}
+                blockStyleFn={blockStyle}
                 editorState={editorState}
                 toolbarClassName="toolbarClassName"
                 wrapperClassName="wrapperClassName"
@@ -196,7 +241,42 @@ const Editor2 = (props) => {
                         </FormHelperText>
                     </FormControl>
 
-                    
+                    <Box className={classes.thumbnail}>
+                        <img src={preview} alt="image" height="200px" />
+
+                        <Button
+                            onClick={() => setOpenDropzone(true)}
+                            variant="contained"
+                            color="secondary"
+                            size="large"
+                            className={classes.button}
+                            startIcon={<ImageIcon />}
+                        >
+                            Upload thumbnail
+                        </Button>
+
+                        <Button
+                            onClick={() => {
+                                console.log(
+                                    convertToRaw(
+                                        editorState.getCurrentContent()
+                                    )
+                                );
+                            }}
+                        >
+                            Convert to raw
+                        </Button>
+                        <DropzoneDialog
+                            open={openDropzone}
+                            onClose={() => setOpenDropzone(false)}
+                            onSave={onDropSave}
+                            acceptedFiles={["image/*"]}
+                            filesLimit={1}
+                            onChange={(f) => {
+                                console.log(f[0]);
+                            }}
+                        />
+                    </Box>
 
                     <FormControl className={classes.formControl} fullWidth>
                         <InputLabel id="category-label">Category</InputLabel>
@@ -216,6 +296,18 @@ const Editor2 = (props) => {
                             ))}
                         </Select>
                     </FormControl>
+
+                    <Box className={classes.tags}>
+                        <Typography>Tags</Typography>
+                        <TagInput
+                            wrapperStyle={wrapperStyles}
+                            inputStyle={inputStyles}
+                            tagStyle={tagStyles}
+                            tags={tags}
+                            onTagsChanged={(tags) => setTags(tags)}
+                            placeholder="Type Tag and hit enter"
+                        />
+                    </Box>
 
                     <FormControl className={classes.formControl}>
                         <FormControlLabel
@@ -247,6 +339,17 @@ const Editor2 = (props) => {
                 >
                     Save
                 </Button>
+                <Button
+                    
+                    variant="contained"
+                    color="secondary"
+                    size="large"
+                    className={classes.button}
+                    startIcon={<VisibilityIcon />}
+                >
+                    Preview Post
+                </Button>
+                
             </Box>
         </Box>
     );

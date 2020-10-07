@@ -1,50 +1,54 @@
-import { Box, makeStyles, Typography } from "@material-ui/core"
-import Layout from "../../components/NavBar/Layout"
+import { Box, makeStyles, Typography } from "@material-ui/core";
+import Layout from "../../components/NavBar/Layout";
 
-import Editor from '../../components/Editor/DynamicLoadedEditor'
-import { useCreatePostMutation } from "../../generated/graphql"
-import { withApollo } from "../../utils/withApollo"
-import { NextPage } from "next"
-import { gql } from "@apollo/client"
-import { fromBase64ToObject } from "../../utils/fromBase64ToObject"
-
+import Editor from "../../components/Editor/DynamicLoadedEditor";
+import {
+    useCreatePostMutation,
+} from "../../generated/graphql";
+import { withApollo } from "../../utils/withApollo";
+import { NextPage } from "next";
+import { gql } from "@apollo/client";
 
 const useStyles = makeStyles({
     container: {
-        backgroundColor: 'white'
+        backgroundColor: "transparent",
+    },
+    title: {
+        margin: '15px'
     }
-})
+});
 
-const NewPost: NextPage = ({}) => { 
-    const classes = useStyles()
+const NewPost: NextPage = ({}) => {
+    const classes = useStyles();
 
+    const [createPost] = useCreatePostMutation();
 
-    const [createPost] = useCreatePostMutation()
+    const handleSave = async (data: any) => {
+        console.log(data);
 
+        //  await createPost({
+        //     variables: {
+        //         title: data.title as string,
+        //         description: data.description as string,
+        //         content: data.content as string,
+        //         publish: true
+        //     }
+        // })
+    };
 
-
-    const handleSave =async (data: any) => {
-         await createPost({
-            variables: {
-                title: data.title as string,
-                description: data.description as string,
-                content: data.content as string,
-                publish: true
-            }
-        })
-    }   
-
-    return(
+    return (
         <Layout>
-            <Box  className={classes.container}>
-            <Typography align='center' variant='h3' component='h3'>Create New Post</Typography>
-            <Editor onSave={handleSave} />
+            <Box className={classes.container}>
+                <Typography className={classes.title} align="center" variant="h3" component="h3">
+                    Create New Post
+                </Typography>
+                <Editor onSave={handleSave} />
             </Box>
         </Layout>
     );
-}
+};
 
-NewPost.getInitialProps = async ({    
+NewPost.getInitialProps = async ({
     // @ts-ignore
     apolloClient,
     res,
@@ -64,13 +68,10 @@ NewPost.getInitialProps = async ({
         `,
     });
 
-
-
-    if(!result.data?.me || result.data?.me.username !== query.user ){
-        res?.writeHead(301, {Location: '/'})
-        res?.end()
+    if (!result.data?.me || result.data?.me.username !== query.user) {
+        res?.writeHead(301, { Location: "/" });
+        res?.end();
     }
-
 
     // console.log("asakllkandlk", result);
     // if (res) {
@@ -85,5 +86,4 @@ NewPost.getInitialProps = async ({
     return {};
 };
 
-
-export default withApollo({ssr:true})(NewPost)
+export default withApollo({ ssr: true })(NewPost);
