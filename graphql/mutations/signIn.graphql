@@ -13,5 +13,6 @@ mutation signIn($email: String!, $password: String!) {
         github
         facebook
         tweeter
+        short_biography
     } 
 }

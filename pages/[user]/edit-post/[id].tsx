@@ -27,15 +27,21 @@ const EditPost: NextPage = () => {
     }
 
     console.log(fromBase64ToObject( data?.getPostById.content!))
+    console.log(data)
 
     const init = {
         title: data?.getPostById.title,
         description: data?.getPostById.description,
-        content: fromBase64ToObject(data?.getPostById.content!)
+        content: fromBase64ToObject(data?.getPostById.content!),
+        tags: data?.getPostById.tags?.split(', ') || [],
+        publish: data?.getPostById.published,
+        category: data?.getPostById.category,
+        thumbnail: data?.getPostById.thumbnail || '/default-pic.png'
     }
 
 
     const handleSave =async (data: any) => {
+        console.log(data)
         const result =  await updatePost({
             variables: {
                 postId: +router.query.id!,

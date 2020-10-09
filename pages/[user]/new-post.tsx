@@ -21,20 +21,22 @@ const useStyles = makeStyles({
 const NewPost: NextPage = ({}) => {
     const classes = useStyles();
 
-    const [createPost] = useCreatePostMutation();
+    const [createPost, {error}] = useCreatePostMutation({errorPolicy: 'all', onError: (err)=>console.error(err)});
+
 
     const handleSave = async (data: any) => {
         console.log(data);
 
-        //  await createPost({
-        //     variables: {
-        //         title: data.title as string,
-        //         description: data.description as string,
-        //         content: data.content as string,
-        //         publish: true
-        //     }
-        // })
+        const result = await createPost({
+            variables: {
+                input: data,
+            },
+        })
+
+        console.log(result)
     };
+
+    console.log(error)
 
     return (
         <Layout>

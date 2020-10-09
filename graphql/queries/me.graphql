@@ -13,5 +13,6 @@ query me {
         github
         facebook
         tweeter
+        short_biography
     }
 }

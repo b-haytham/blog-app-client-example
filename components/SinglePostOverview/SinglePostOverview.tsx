@@ -14,7 +14,7 @@ import { useRouter } from "next/router";
 import { Like, Post, User, Comment, useDeletePostMutation } from "../../generated/graphql";
 
 interface Props {
-    info: { __typename?: "Post" } & Pick<
+    info: ({ __typename?: "Post" } & Pick<
         Post,
         | "id"
         | "title"
@@ -40,8 +40,18 @@ interface Props {
             likes: Array<
                 { __typename?: "Like" } & Pick<Like, "id" | "creatorId">
             >;
-        };
-    kind: "private" | "public";
+        } & {kind: "private" | "public"}) | ((
+            { __typename?: 'Post' }
+            & Pick<Post, 'id' | 'title' | 'thumbnail' | 'tags' | 'description' | 'created_at'>
+            & { comments: Array<(
+              { __typename?: 'Comment' }
+              & Pick<Comment, 'id'>
+            )>, likes: Array<(
+              { __typename?: 'Like' }
+              & Pick<Like, 'id'>
+            )> }
+          ) & {username: string, avatar: string | null | undefined, kind: 'user'});
+    //kind: "private" | "public" 
 }
 
 const useStyles = makeStyles({
@@ -52,16 +62,17 @@ const useStyles = makeStyles({
             transform: "scale(1.1)",
             transitionDuration: "1s",
         },
+        minHeight: '410px'
     },
     media: {
         height: "200px",
     },
 });
 
-const SinglePostOverview: React.FC<Props> = ({ info, kind }) => {
+const SinglePostOverview: React.FC<Props> = ({ info, /*kind*/ }) => {
     const classes = useStyles();
     const router = useRouter();
-
+    console.log(info)
 
     const [deletePost] = useDeletePostMutation()
 
@@ -69,24 +80,22 @@ const SinglePostOverview: React.FC<Props> = ({ info, kind }) => {
         <Card elevation={3} className={classes.container}>
             <CardActionArea
                 onClick={() =>
-                    router.push("/[user]", `/${info.creator.username}`)
+                    router.push("/[user]", `/${info.kind !== 'user' ? info.creator.username : info.username}`)
                 }
             >
                 <CardHeader
-                    avatar={
-                        <Avatar>
-                            <img src="/logo.png" alt="logo" />
-                        </Avatar>
-                    }
-                    title={`${info.creator.username}`}
+                    
+                    avatar={<Avatar src={(info.kind !== 'user' ? info.creator.avatar : info.avatar) || '/logo.png'}  />}
+                    title={`${info.kind !== 'user' ? info.creator.username : info.username}`}
                 />
             </CardActionArea>
             <CardActionArea
                 onClick={() => router.push("/posts/[id]", `/posts/${info.id}`)}
             >
                 <CardMedia
+                    
                     className={classes.media}
-                    image="/default-pic.png"
+                    image={info.thumbnail || '/default-pic.png'}
                     title="Contemplative Reptile"
                 />
                 <CardContent>
@@ -103,7 +112,7 @@ const SinglePostOverview: React.FC<Props> = ({ info, kind }) => {
                 </CardContent>
             </CardActionArea>
             <CardActions>
-                {kind === "public" && (
+                {(info.kind === "public" || info.kind === 'user')  && (
                     <Button
                         size="small"
                         color="primary"
@@ -114,7 +123,7 @@ const SinglePostOverview: React.FC<Props> = ({ info, kind }) => {
                         Learn More
                     </Button>
                 )}
-                {kind === "private" && (
+                {info.kind === "private" && (
                     <>
                         <Button
                             size="small"

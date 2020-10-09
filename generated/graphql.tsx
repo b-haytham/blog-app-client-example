@@ -9,8 +9,6 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  /** The `Upload` scalar type represents a file upload. */
-  Upload: any;
 };
 
 export type Query = {
@@ -57,6 +55,7 @@ export type User = {
   first_name?: Maybe<Scalars['String']>;
   last_name?: Maybe<Scalars['String']>;
   email: Scalars['String'];
+  short_biography?: Maybe<Scalars['String']>;
   posts: Array<Post>;
   comments: Array<Comment>;
   likes: Array<Like>;
@@ -81,7 +80,8 @@ export type Post = {
   creator: User;
   likes: Array<Like>;
   comments: Array<Comment>;
-  tags?: Maybe<Scalars['Float']>;
+  category?: Maybe<Category>;
+  tags?: Maybe<Scalars['String']>;
   published: Scalars['Boolean'];
   created_at: Scalars['String'];
   updated_at: Scalars['String'];
@@ -114,6 +114,23 @@ export type Comment = {
   updated_at: Scalars['String'];
 };
 
+export enum Category {
+  Technology = 'Technology',
+  Health = 'Health',
+  Science = 'Science',
+  Business = 'Business',
+  Culture = 'Culture',
+  Politics = 'Politics',
+  Relationships = 'Relationships',
+  Startups = 'Startups',
+  Ai = 'Ai',
+  ComputerScience = 'ComputerScience',
+  Programming = 'Programming',
+  Cryptocurrency = 'Cryptocurrency',
+  Productivity = 'Productivity',
+  Education = 'Education'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
   createUser: User;
@@ -124,7 +141,6 @@ export type Mutation = {
   createPost: Post;
   updatePost: Post;
   deletePost: Scalars['Boolean'];
-  pic: Scalars['Boolean'];
   updateComment: Comment;
   createComment: Comment;
   deleteComment: Scalars['Boolean'];
@@ -157,10 +173,7 @@ export type MutationForgetPasswordArgs = {
 
 
 export type MutationCreatePostArgs = {
-  publish: Scalars['Boolean'];
-  content: Scalars['String'];
-  title: Scalars['String'];
-  description: Scalars['String'];
+  input: CreatePostInputType;
 };
 
 
@@ -172,11 +185,6 @@ export type MutationUpdatePostArgs = {
 
 export type MutationDeletePostArgs = {
   postId: Scalars['Float'];
-};
-
-
-export type MutationPicArgs = {
-  pic: Scalars['Upload'];
 };
 
 
@@ -213,6 +221,7 @@ export type UpdateUserInputType = {
   first_name?: Maybe<Scalars['String']>;
   last_name?: Maybe<Scalars['String']>;
   avatar?: Maybe<Scalars['String']>;
+  short_biography?: Maybe<Scalars['String']>;
   studied_at?: Maybe<Scalars['String']>;
   work_at?: Maybe<Scalars['String']>;
   github?: Maybe<Scalars['String']>;
@@ -220,14 +229,25 @@ export type UpdateUserInputType = {
   tweeter?: Maybe<Scalars['String']>;
 };
 
+export type CreatePostInputType = {
+  title: Scalars['String'];
+  description: Scalars['String'];
+  thumbnail?: Maybe<Scalars['String']>;
+  content: Scalars['String'];
+  category: Category;
+  tags?: Maybe<Scalars['String']>;
+  published: Scalars['Boolean'];
+};
+
 export type UpdatePostInputType = {
   title: Scalars['String'];
   description: Scalars['String'];
   thumbnail?: Maybe<Scalars['String']>;
   content: Scalars['String'];
-  published?: Maybe<Scalars['Boolean']>;
+  published: Scalars['Boolean'];
+  tags: Scalars['String'];
+  category: Category;
 };
-
 
 export type CreateCommentMutationVariables = Exact<{
   postId: Scalars['Float'];
@@ -244,10 +264,7 @@ export type CreateCommentMutation = (
 );
 
 export type CreatePostMutationVariables = Exact<{
-  title: Scalars['String'];
-  description: Scalars['String'];
-  content: Scalars['String'];
-  publish: Scalars['Boolean'];
+  input: CreatePostInputType;
 }>;
 
 
@@ -255,7 +272,7 @@ export type CreatePostMutation = (
   { __typename?: 'Mutation' }
   & { createPost: (
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'title' | 'description' | 'content' | 'creatorId'>
+    & Pick<Post, 'id' | 'title' | 'content' | 'description' | 'creatorId'>
   ) }
 );
 
@@ -314,16 +331,6 @@ export type LogoutMutation = (
   & Pick<Mutation, 'logout'>
 );
 
-export type UploadMutationVariables = Exact<{
-  pic: Scalars['Upload'];
-}>;
-
-
-export type UploadMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'pic'>
-);
-
 export type SignInMutationVariables = Exact<{
   email: Scalars['String'];
   password: Scalars['String'];
@@ -334,7 +341,7 @@ export type SignInMutation = (
   { __typename?: 'Mutation' }
   & { signInUser: (
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'email' | 'username' | 'first_name' | 'last_name' | 'created_at' | 'updated_at' | 'avatar' | 'studied_at' | 'work_at' | 'github' | 'facebook' | 'tweeter'>
+    & Pick<User, 'id' | 'email' | 'username' | 'first_name' | 'last_name' | 'created_at' | 'updated_at' | 'avatar' | 'studied_at' | 'work_at' | 'github' | 'facebook' | 'tweeter' | 'short_biography'>
   ) }
 );
 
@@ -412,7 +419,7 @@ export type GetPostByIdQuery = (
   { __typename?: 'Query' }
   & { getPostById: (
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'title' | 'content' | 'thumbnail' | 'description' | 'published' | 'tags'>
+    & Pick<Post, 'id' | 'title' | 'content' | 'thumbnail' | 'description' | 'published' | 'tags' | 'category'>
   ) }
 );
 
@@ -425,7 +432,7 @@ export type GetPublicPostByIdQuery = (
   { __typename?: 'Query' }
   & { getPublicPostById: (
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'title' | 'description' | 'thumbnail' | 'content' | 'tags' | 'created_at' | 'updated_at'>
+    & Pick<Post, 'id' | 'title' | 'description' | 'thumbnail' | 'content' | 'tags' | 'category' | 'created_at' | 'updated_at'>
     & { creator: (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username' | 'avatar'>
@@ -447,7 +454,7 @@ export type GetPublicPostsQuery = (
   { __typename?: 'Query' }
   & { getPublicPosts: Array<(
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'title' | 'description' | 'content' | 'creatorId' | 'thumbnail' | 'tags' | 'published' | 'created_at' | 'updated_at'>
+    & Pick<Post, 'id' | 'title' | 'description' | 'content' | 'creatorId' | 'category' | 'thumbnail' | 'tags' | 'published' | 'created_at' | 'updated_at'>
     & { creator: (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username' | 'avatar'>
@@ -470,10 +477,17 @@ export type GetUserByUsernameQuery = (
   { __typename?: 'Query' }
   & { getUser: (
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'email' | 'avatar' | 'username' | 'studied_at' | 'work_at' | 'github' | 'facebook' | 'tweeter' | 'created_at'>
+    & Pick<User, 'id' | 'email' | 'avatar' | 'username' | 'studied_at' | 'work_at' | 'github' | 'facebook' | 'tweeter' | 'created_at' | 'short_biography'>
     & { posts: Array<(
       { __typename?: 'Post' }
-      & Pick<Post, 'id' | 'title' | 'tags' | 'description' | 'created_at'>
+      & Pick<Post, 'id' | 'title' | 'thumbnail' | 'tags' | 'description' | 'category' | 'created_at'>
+      & { comments: Array<(
+        { __typename?: 'Comment' }
+        & Pick<Comment, 'id'>
+      )>, likes: Array<(
+        { __typename?: 'Like' }
+        & Pick<Like, 'id'>
+      )> }
     )> }
   ) }
 );
@@ -485,7 +499,7 @@ export type MeQuery = (
   { __typename?: 'Query' }
   & { me?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'email' | 'username' | 'first_name' | 'last_name' | 'created_at' | 'updated_at' | 'avatar' | 'studied_at' | 'work_at' | 'github' | 'facebook' | 'tweeter'>
+    & Pick<User, 'id' | 'email' | 'username' | 'first_name' | 'last_name' | 'created_at' | 'updated_at' | 'avatar' | 'studied_at' | 'work_at' | 'github' | 'facebook' | 'tweeter' | 'short_biography'>
   )> }
 );
 
@@ -527,12 +541,12 @@ export type CreateCommentMutationHookResult = ReturnType<typeof useCreateComment
 export type CreateCommentMutationResult = Apollo.MutationResult<CreateCommentMutation>;
 export type CreateCommentMutationOptions = Apollo.BaseMutationOptions<CreateCommentMutation, CreateCommentMutationVariables>;
 export const CreatePostDocument = gql`
-    mutation createPost($title: String!, $description: String!, $content: String!, $publish: Boolean!) {
-  createPost(title: $title, description: $description, content: $content, publish: $publish) {
+    mutation createPost($input: CreatePostInputType!) {
+  createPost(input: $input) {
     id
     title
-    description
     content
+    description
     creatorId
   }
 }
@@ -552,10 +566,7 @@ export type CreatePostMutationFn = Apollo.MutationFunction<CreatePostMutation, C
  * @example
  * const [createPostMutation, { data, loading, error }] = useCreatePostMutation({
  *   variables: {
- *      title: // value for 'title'
- *      description: // value for 'description'
- *      content: // value for 'content'
- *      publish: // value for 'publish'
+ *      input: // value for 'input'
  *   },
  * });
  */
@@ -724,36 +735,6 @@ export function useLogoutMutation(baseOptions?: Apollo.MutationHookOptions<Logou
 export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
 export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
 export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
-export const UploadDocument = gql`
-    mutation upload($pic: Upload!) {
-  pic(pic: $pic)
-}
-    `;
-export type UploadMutationFn = Apollo.MutationFunction<UploadMutation, UploadMutationVariables>;
-
-/**
- * __useUploadMutation__
- *
- * To run a mutation, you first call `useUploadMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUploadMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [uploadMutation, { data, loading, error }] = useUploadMutation({
- *   variables: {
- *      pic: // value for 'pic'
- *   },
- * });
- */
-export function useUploadMutation(baseOptions?: Apollo.MutationHookOptions<UploadMutation, UploadMutationVariables>) {
-        return Apollo.useMutation<UploadMutation, UploadMutationVariables>(UploadDocument, baseOptions);
-      }
-export type UploadMutationHookResult = ReturnType<typeof useUploadMutation>;
-export type UploadMutationResult = Apollo.MutationResult<UploadMutation>;
-export type UploadMutationOptions = Apollo.BaseMutationOptions<UploadMutation, UploadMutationVariables>;
 export const SignInDocument = gql`
     mutation signIn($email: String!, $password: String!) {
   signInUser(email: $email, password: $password) {
@@ -770,6 +751,7 @@ export const SignInDocument = gql`
     github
     facebook
     tweeter
+    short_biography
   }
 }
     `;
@@ -979,6 +961,7 @@ export const GetPostByIdDocument = gql`
     description
     published
     tags
+    category
   }
 }
     `;
@@ -1017,6 +1000,7 @@ export const GetPublicPostByIdDocument = gql`
     thumbnail
     content
     tags
+    category
     created_at
     updated_at
     creator {
@@ -1070,6 +1054,7 @@ export const GetPublicPostsDocument = gql`
     description
     content
     creatorId
+    category
     creator {
       id
       username
@@ -1130,12 +1115,21 @@ export const GetUserByUsernameDocument = gql`
     facebook
     tweeter
     created_at
+    short_biography
     posts {
       id
       title
+      thumbnail
       tags
       description
+      category
       created_at
+      comments {
+        id
+      }
+      likes {
+        id
+      }
     }
   }
 }
@@ -1182,6 +1176,7 @@ export const MeDocument = gql`
     github
     facebook
     tweeter
+    short_biography
   }
 }
     `;

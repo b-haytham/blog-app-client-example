@@ -1,9 +1,9 @@
-mutation createPost($title: String!, $description: String!, $content: String!, $publish: Boolean!) {
-    createPost(title: $title, description: $description, content: $content, publish: $publish) {
-        id
-        title
-        description
-        content
-        creatorId
-    }
+mutation createPost($input: CreatePostInputType!) { 
+  createPost(input: $input){
+    id
+    title
+    content
+    description
+    creatorId
+  }
 }
