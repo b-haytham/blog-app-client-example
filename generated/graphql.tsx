@@ -29,8 +29,18 @@ export type QueryGetUserArgs = {
 };
 
 
+export type QueryGetLoggedInUserPostsArgs = {
+  query: Scalars['String'];
+};
+
+
 export type QueryGetPostByIdArgs = {
   postId: Scalars['Float'];
+};
+
+
+export type QueryGetPublicPostsArgs = {
+  query: Scalars['String'];
 };
 
 
@@ -417,14 +427,16 @@ export type GetCommentsByPostIdQuery = (
   )> }
 );
 
-export type GetLoggedInUserPostsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetLoggedInUserPostsQueryVariables = Exact<{
+  query: Scalars['String'];
+}>;
 
 
 export type GetLoggedInUserPostsQuery = (
   { __typename?: 'Query' }
   & { getLoggedInUserPosts: Array<(
     { __typename?: 'Post' }
-    & Pick<Post, 'id' | 'title' | 'description' | 'content' | 'creatorId' | 'thumbnail' | 'tags' | 'published' | 'created_at' | 'updated_at'>
+    & Pick<Post, 'id' | 'title' | 'description' | 'content' | 'creatorId' | 'category' | 'thumbnail' | 'tags' | 'published' | 'created_at' | 'updated_at'>
     & { creator: (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username' | 'avatar'>
@@ -475,7 +487,9 @@ export type GetPublicPostByIdQuery = (
   ) }
 );
 
-export type GetPublicPostsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetPublicPostsQueryVariables = Exact<{
+  query: Scalars['String'];
+}>;
 
 
 export type GetPublicPostsQuery = (
@@ -995,13 +1009,14 @@ export type GetCommentsByPostIdQueryHookResult = ReturnType<typeof useGetComment
 export type GetCommentsByPostIdLazyQueryHookResult = ReturnType<typeof useGetCommentsByPostIdLazyQuery>;
 export type GetCommentsByPostIdQueryResult = Apollo.QueryResult<GetCommentsByPostIdQuery, GetCommentsByPostIdQueryVariables>;
 export const GetLoggedInUserPostsDocument = gql`
-    query getLoggedInUserPosts {
-  getLoggedInUserPosts {
+    query getLoggedInUserPosts($query: String!) {
+  getLoggedInUserPosts(query: $query) {
     id
     title
     description
     content
     creatorId
+    category
     creator {
       id
       username
@@ -1037,6 +1052,7 @@ export const GetLoggedInUserPostsDocument = gql`
  * @example
  * const { data, loading, error } = useGetLoggedInUserPostsQuery({
  *   variables: {
+ *      query: // value for 'query'
  *   },
  * });
  */
@@ -1145,8 +1161,8 @@ export type GetPublicPostByIdQueryHookResult = ReturnType<typeof useGetPublicPos
 export type GetPublicPostByIdLazyQueryHookResult = ReturnType<typeof useGetPublicPostByIdLazyQuery>;
 export type GetPublicPostByIdQueryResult = Apollo.QueryResult<GetPublicPostByIdQuery, GetPublicPostByIdQueryVariables>;
 export const GetPublicPostsDocument = gql`
-    query getPublicPosts {
-  getPublicPosts {
+    query getPublicPosts($query: String!) {
+  getPublicPosts(query: $query) {
     id
     title
     description
@@ -1188,6 +1204,7 @@ export const GetPublicPostsDocument = gql`
  * @example
  * const { data, loading, error } = useGetPublicPostsQuery({
  *   variables: {
+ *      query: // value for 'query'
  *   },
  * });
  */

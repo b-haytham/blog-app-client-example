@@ -1,10 +1,11 @@
-query getLoggedInUserPosts{
-  getLoggedInUserPosts {
+query getLoggedInUserPosts($query: String!){
+  getLoggedInUserPosts(query: $query) {
     id
     title
     description
     content
     creatorId
+    category
     creator{
         id
         username

@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 import { Box, Button, Container, makeStyles, Typography } from "@material-ui/core";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Loading from "../../components/Loading";
 import Layout from "../../components/NavBar/Layout";
 import PostsContainer from "../../components/PostsContainer/PostsContainer";
@@ -33,12 +33,17 @@ const Dashboard: NextPage = () => {
 
     const { data, loading, error } = useMeQuery();
 
+    const [searchTerm, setSearchTerm] = useState('')
 
     const {
         data: postData,
         loading: postLoading,
         error: postError,
-    } = useGetLoggedInUserPostsQuery();
+    } = useGetLoggedInUserPostsQuery({
+        variables: {
+            query: searchTerm
+        }
+    });
 
    
 
@@ -49,6 +54,8 @@ const Dashboard: NextPage = () => {
 
             <Box margin="50px auto 50px">
                     <SearchBar
+                        value={searchTerm}
+                        onChange={(e)=> setSearchTerm(e.target.value)}
                         placeholder="search"
                     />
                 </Box>

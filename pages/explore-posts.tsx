@@ -22,28 +22,31 @@ const ExplorePosts = () => {
     const router = useRouter();
 
 
-    const { data, loading, error } = useGetPublicPostsQuery();
+    const [searchTerm, setSearchTerm] = useState('')
 
+    const { data, loading, error } = useGetPublicPostsQuery({
+        variables: {
+            query: searchTerm
+        }
+    });
 
+    
 
     return (
         <Layout>
             <Box display="flex" flexDirection="column" justifyContent="center">
                 <Box margin="50px auto 50px">
                     <SearchBar
-                        placeholder="search"
+                        onChange={(e)=> setSearchTerm(e.target.value)}
+                        value={searchTerm}
+                        placeholder="search .."
                     />
                 </Box>
 
                 <hr className={classes.line} />
                 {loading && <Loading/>}
-                {/* {loading && (
-                    <Typography variant="h5" align="center">
-                        -----Loading-----
-                    </Typography>
-                )} */}
                 {data?.getPublicPosts.length == 0 && (
-                    <Typography variant="h5" align="center">
+                    <Typography  variant="h5" align="center">
                         No Posts
                     </Typography>
                 )}
