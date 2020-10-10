@@ -3,6 +3,7 @@ import { Box, Button, Container, makeStyles, Typography } from "@material-ui/cor
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
+import Loading from "../../components/Loading";
 import Layout from "../../components/NavBar/Layout";
 import PostsContainer from "../../components/PostsContainer/PostsContainer";
 import SearchBar from "../../components/SearchBar/SearchBar";
@@ -39,15 +40,11 @@ const Dashboard: NextPage = () => {
         error: postError,
     } = useGetLoggedInUserPostsQuery();
 
-    if (loading || postLoading) {
-        return <Typography variant="h1">-------Loading</Typography>;
-    }
-
-    console.log(postData);
-    console.log(postError)
+   
 
     return (
         <Layout>
+            {(loading || postLoading) && <Loading/> }
             <Box display="flex" flexDirection="column" justifyContent="center">
 
             <Box margin="50px auto 50px">

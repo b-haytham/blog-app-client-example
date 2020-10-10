@@ -16,16 +16,61 @@ import {
     Input,
     FormHelperText,
     makeStyles,
-    Button
+    Button,
+    Box,
+    Divider,
 } from "@material-ui/core";
+import Link from "next/link";
+import Loading from "../components/Loading";
 
 const useStyles = makeStyles({
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center', 
+        alignItems: 'center',
+        minHeight: 'calc(100vh - 80px)'
+    },
     form: {
         width: "70%",
-        margin: "0 auto",
+        margin: "20px auto",
+        padding: '20px',
+        border: '1px solid black',
+        borderRadius: '25px'
     },
     control: {
-        margin: '20px 0'
+        margin: "20px 0",
+    },
+    title: {
+        fontSize: '50px',
+        fontWeight:'bolder',
+        margin: '20px',
+        color: 'black'
+    },
+    button: {
+        margin: "15px auto",
+        backgroundColor: "black",
+        color: "white",
+        fontWeight: "bolder",
+        transition: "all 0.2s",
+        "&:hover": {
+            color: "black",
+            backgroundColor: "white",
+            border: "2px solid black",
+        },
+    },
+    forgotPass: {
+        display: 'flex',
+        flexDirection:'column',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    link: {
+        margin: '10px',
+        fontWeight: 'bolder',
+        '&:hover': {
+            textDecoration: 'underline'
+        }
     }
 });
 
@@ -34,11 +79,9 @@ const SignIn = () => {
 
     const router = useRouter();
     const { data, loading, error } = useMeQuery();
-    const [signIn] = useSignInMutation();
+    const [signIn, {loading:signInLoading }] = useSignInMutation();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
-    
 
     if (data?.me) {
         router.push(
@@ -67,19 +110,15 @@ const SignIn = () => {
                 cache.evict({ fieldName: "posts:{}" });
             },
         });
-        router.push({
-            pathname: "/[user]",
-            query: {
-                user: result.data?.signInUser.username,
-            },
-        });
+        router.push('/[user]', `/${result.data?.signInUser.username}`);
     };
 
     return (
         <Layout>
-            <Typography align="center" variant="h1">
-                {" "}
-                Sign In
+            {signInLoading && <Loading/>}
+            <Box className={classes.container}>
+            <Typography align="center" variant="h1"className={classes.title}>
+                Login
             </Typography>
             <form onSubmit={handleSubmit} className={classes.form}>
                 <FormControl className={classes.control} fullWidth>
@@ -107,10 +146,27 @@ const SignIn = () => {
                         At least 6 ch
                     </FormHelperText>
                 </FormControl>
-                <FormControl className={classes.control} fullWidth>
-                    <Button type='submit' variant='outlined' >Sign in</Button>
-                </FormControl>
+                <Box className={classes.forgotPass}>
+                    <Link href='/forget-password'>
+                        <a className={classes.link}>  forgot Password ?</a>
+                    </Link>
+                    <Link href='/sign-up'>
+                        <a className={classes.link}> Don't have account ? , register</a>
+                    </Link>
+                </Box>
+                <Box display='flex' justifyContent='center'>
+                    <Button
+                        type='submit'
+                        variant="contained"
+                        color="secondary"
+                        size="large"
+                        className={classes.button}
+                    >
+                        Submit
+                    </Button>
+                </Box>
             </form>
+            </Box>
         </Layout>
     );
 };

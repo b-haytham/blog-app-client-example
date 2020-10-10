@@ -7,20 +7,21 @@ import {
     Input,
     InputLabel,
     makeStyles,
-    Snackbar,
     Typography,
+    Snackbar,
 } from "@material-ui/core";
-import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
+import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 import { NextPage } from "next";
+import { useRouter } from "next/router";
 import { FormEvent, useState } from "react";
 import Loading from "../../components/Loading";
 import Layout from "../../components/NavBar/Layout";
-import { useForgotPasswordMutation } from "../../generated/graphql";
+import { useChangePasswordMutation } from "../../generated/graphql";
 import { withApollo } from "../../utils/withApollo";
 
 const Alert = (props: AlertProps) => {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
-  }
+};
 
 interface Props {}
 
@@ -62,49 +63,68 @@ const useStyles = makeStyles({
     },
 });
 
-const ForgotPassword: NextPage<Props> = ({}) => {
+const ChangePassword: NextPage<Props> = ({}) => {
     const classes = useStyles();
+    const router = useRouter();
 
-    const [email, setEmail] = useState("");
-    
     const [snackBar, setSnackBar] = useState({
         open: false,
-        text: '',
-        severity: 'success' as "success" | "info" | "warning" | "error" | undefined
-    })
+        text: "",
+        severity: "success" as
+            | "success"
+            | "info"
+            | "warning"
+            | "error"
+            | undefined,
+    });
 
-    const [forgotPassword, {loading}] = useForgotPasswordMutation()
+    console.log(router.query)
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
 
+    const [changePassword, {loading}] = useChangePasswordMutation();
 
-    const handleSubmit = async(e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        const result = await forgotPassword({
-            variables: {
-                email
-            }
-        })
-
-        if(result.data?.forgetPassword){
-            setSnackBar({
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (password !== confirmPassword) {
+            return setSnackBar((prev) => ({
                 open: true,
-                text: 'Check your email',
-                severity: 'success'
-            })
-        }else {
-            setSnackBar({
-                open: true,
-                text: 'Something went wrong',
-                severity: 'error'
-            })
+                text: "password should match",
+                severity: "error",
+            }));
         }
-    }
+        const result = await changePassword({
+            variables: {
+                password,
+                token:
+                    typeof router.query.token === "string"
+                        ? router.query.token
+                        : "",
+            },
+        });
 
-    const  handleSnackBarClose =() => {
-        setSnackBar((prev)=>({
+        if(result.data?.changePassword){
+            setSnackBar((prev) => ({
+                open: true,
+                text: "Password updated go login",
+                severity: "success",
+            }));
+        }else {
+            setSnackBar((prev) => ({
+                open: true,
+                text: "ERROR",
+                severity: "error",
+            }));
+        }
+    };
+
+
+    const handleSnackBarClose = () => {
+        setSnackBar((prev) => ({
             ...prev,
-            open: false
-        }))
-    }
+            open: false,
+        }));
+    };
 
     return (
         <Layout>
@@ -115,27 +135,48 @@ const ForgotPassword: NextPage<Props> = ({}) => {
                     align="center"
                     variant="h1"
                 >
-                    Enter E-mail
+                    Change Password
                 </Typography>
-                <Snackbar open={snackBar.open} autoHideDuration={4000} onClose={handleSnackBarClose}>
-                    <Alert onClose={handleSnackBarClose}  severity={snackBar.severity}>
+                <Snackbar
+                    open={snackBar.open}
+                    autoHideDuration={4000}
+                    onClose={handleSnackBarClose}
+                >
+                    <Alert
+                        onClose={handleSnackBarClose}
+                        severity={snackBar.severity}
+                    >
                         {snackBar.text}
                     </Alert>
                 </Snackbar>
                 <form onSubmit={handleSubmit} className={classes.form}>
                     <FormControl className={classes.control} fullWidth>
-                        <InputLabel htmlFor="email">E-mail</InputLabel>
+                        <InputLabel htmlFor="username">New Password</InputLabel>
                         <Input
-                            value={email}
-                            onChange={(e) =>setEmail(e.target.value)}
-                            id="email"
-                            aria-describedby="my-email-text"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            id="username"
+                            aria-describedby="my-username-text"
                         />
-                        <FormHelperText id="my-email-text">
-                            we will send emil to restore password
+                        <FormHelperText id="my-username-text">
+                            At least 6 ch
                         </FormHelperText>
                     </FormControl>
-                    
+                    <FormControl className={classes.control} fullWidth>
+                        <InputLabel htmlFor="confirm-password">
+                            Confirm Password
+                        </InputLabel>
+                        <Input
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            id="confirm-password"
+                            aria-describedby="my-confirm-password-text"
+                        />
+                        <FormHelperText id="my-confirm-password-text">
+                            At least 6 ch
+                        </FormHelperText>
+                    </FormControl>
+
                     <Box display="flex" justifyContent="center">
                         <Button
                             type="submit"
@@ -154,7 +195,7 @@ const ForgotPassword: NextPage<Props> = ({}) => {
 };
 
 
-ForgotPassword.getInitialProps = async ({
+ChangePassword.getInitialProps = async ({
     // @ts-ignore
     apolloClient,
     res,
@@ -194,5 +235,4 @@ ForgotPassword.getInitialProps = async ({
     return {};
 };
 
-export default withApollo({ssr: true})( ForgotPassword);
-
+export default withApollo({ssr: true})(ChangePassword);

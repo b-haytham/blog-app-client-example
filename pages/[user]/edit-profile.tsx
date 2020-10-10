@@ -23,6 +23,7 @@ import { withApollo } from "../../utils/withApollo";
 
 import ImageIcon from "@material-ui/icons/Image";
 import { DropzoneDialog } from "material-ui-dropzone";
+import Loading from "../../components/Loading";
 
 
 const useStyles = makeStyles({
@@ -72,11 +73,12 @@ const EditProfile: NextPage = () => {
     const classes = useStyles();
     const router = useRouter();
 
+    const [openDropzone, setOpenDropzone] = useState(false);
+
     const { data, loading, error } = useMeQuery();
 
-    const [updateUser] = useUpdateUserMutation();
+    const [updateUser,{loading: updateUserLoading}] = useUpdateUserMutation();
 
-    const [openDropzone, setOpenDropzone] = useState(false);
 
     const [formData, setFormData] = useState({
         username: data?.me?.username,
@@ -116,6 +118,7 @@ const EditProfile: NextPage = () => {
 
     return (
         <Layout>
+            {(loading || updateUserLoading) && <Loading/>}
             <Typography className={classes.title} variant="h2">
                 Edit Profile
             </Typography>

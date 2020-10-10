@@ -1,5 +1,4 @@
-import { Box, Container, makeStyles, Typography } from "@material-ui/core";
-import { motion } from "framer-motion";
+import { Box, makeStyles, Typography } from "@material-ui/core";
 import Logo from "../components/Logo";
 import Layout from "../components/NavBar/Layout";
 
@@ -7,7 +6,8 @@ import Typed from "react-typed";
 import CategoryBadge from "../components/CategoryBadge";
 
 
-import { faCoffee, faCode , faGraduationCap,  faLaptopCode, faHandHoldingUsd, faHeartbeat, faHandshake, faHashtag} from '@fortawesome/free-solid-svg-icons'
+import { faCode , faGraduationCap,  faLaptopCode, faHandHoldingUsd, faHeartbeat, faHandshake, faHashtag} from '@fortawesome/free-solid-svg-icons'
+
 
 
 const useStyles = makeStyles({
@@ -94,7 +94,7 @@ const Index = () => {
                     Topics you can find here
                 </Typography>
                 <Box
-
+            
                     component='div'
                     display='flex'
                     flexWrap='wrap'

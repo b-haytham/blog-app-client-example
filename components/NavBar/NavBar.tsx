@@ -8,6 +8,8 @@ import {
     MenuItem,
     IconButton,
     Box,
+    useMediaQuery,
+    Divider,
 } from "@material-ui/core";
 
 import AccountCircle from "@material-ui/icons/AccountCircle";
@@ -17,46 +19,51 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { useLogoutMutation, useMeQuery } from "../../generated/graphql";
 import { withApollo } from "../../utils/withApollo";
+import Loading from "../Loading";
 import Logo from "../Logo";
 import ActiveNavLink from "./ActiveNavLink";
 
 const useStyles = makeStyles({
     root: {
         height: "80px",
-        backgroundColor: "#ebf0ec",
+        backgroundColor: "black",
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
     },
     linkActive: {
-        backgroundColor: "#ccd1d9",
+        backgroundColor: "white",
+        color: 'black !important',
     },
     logo: {
         padding: "5px 20px",
-        color: "black",
+        color: "white",
         fontFamily: "roboto",
         fontSize: "1.5em",
         fontWeight: "bold",
     },
     link: {
-        color: "black",
+        color: "white",
         margin: "0 5px",
         padding: "5px 20px",
         borderRadius: "10px",
+        fontWeight: 'bolder'
     },
     circle: {
-        border: "1px solid black",
+        border: "1px solid white",
     },
 });
 
 const NavBar = () => {
     const classes = useStyles();
     const router = useRouter();
+    const matches = useMediaQuery('(max-width:600px)')
+
     const apolloClient = useApolloClient();
 
-    const { data, error, loading } = useMeQuery();
-    const [logout] = useLogoutMutation();
+    const { data, loading } = useMeQuery();
+    const [logout, {loading: logoutLoading}] = useLogoutMutation();
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [
@@ -88,8 +95,9 @@ const NavBar = () => {
 
     return (
         <AppBar className={classes.root} position="static">
-            <Box display='flex' alignItems='center' justifyContent='center'> 
-                <Logo isNav />
+            {(loading || logoutLoading) && <Loading/>}
+            <Box  display='flex' alignItems='center' justifyContent='center'> 
+                <Logo  isNav />
                 <Typography className={classes.logo}>Logo</Typography>
             </Box>
             <Toolbar>
@@ -110,7 +118,7 @@ const NavBar = () => {
 
                 {!data?.me && (
                     <>
-                        {" "}
+                        
                         <ActiveNavLink
                             className={classes.link}
                             activeClassName={classes.linkActive}
@@ -129,13 +137,13 @@ const NavBar = () => {
                 )}
                 {data?.me && (
                     <>
-                        <ActiveNavLink
+                        {!matches && <ActiveNavLink
                             className={classes.link}
                             href="/[user]/new-post"
                             as={`/${data.me.username}/new-post`}
                         >
                             Create New Post
-                        </ActiveNavLink>
+                        </ActiveNavLink>}
                         <IconButton
                             aria-label="account of current user"
                             aria-controls="menu-appbar"
@@ -143,7 +151,7 @@ const NavBar = () => {
                             onClick={handleProfileMenuOpen}
                             color="inherit"
                         >
-                            <AccountCircle style={{ color: "black" }} />
+                            <AccountCircle style={{ color: "white" }} />
                         </IconButton>
                         <Menu
                             anchorEl={anchorEl}
@@ -163,6 +171,17 @@ const NavBar = () => {
                             <MenuItem
                                 onClick={() => {
                                     router.push(
+                                        "/[user]/new-post",
+                                        `/${data.me?.username}/new-post`
+                                    );
+                                }}
+                            >
+                                Create New Post
+                            </MenuItem>
+                            <Divider/>
+                            <MenuItem
+                                onClick={() => {
+                                    router.push(
                                         "/[user]",
                                         `/${data.me?.username}`
                                     );
@@ -170,6 +189,7 @@ const NavBar = () => {
                             >
                                 Profile
                             </MenuItem>
+                            <Divider/>
                             <MenuItem
                                 onClick={() => {
                                     router.push(
@@ -180,6 +200,7 @@ const NavBar = () => {
                             >
                                 Dashboard
                             </MenuItem>
+                            <Divider/>
                             <MenuItem
                                 onClick={() => {
                                     router.push(
@@ -190,9 +211,11 @@ const NavBar = () => {
                             >
                                 Settings
                             </MenuItem>
+                            <Divider/>
                             <MenuItem
                                 onClick={async () => {
                                     await logout();
+                                    await router.push('/')
                                     await apolloClient.resetStore();
                                 }}
                             >

@@ -22,6 +22,7 @@ const useStyles = makeStyles({
         border: "2px solid #121212",
         borderRadius: "25px",
         outline: "none",
+        transition: 'all .5s',
         '&:hover': {
             boxShadow: '3px 3px 3px  rgba(0,0,0,0.4)'
         }

@@ -1,6 +1,7 @@
 import { Box, makeStyles, Typography } from "@material-ui/core";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import Loading from "../components/Loading";
 
 import Layout from "../components/NavBar/Layout";
 import PostsContainer from "../components/PostsContainer/PostsContainer";
@@ -35,12 +36,12 @@ const ExplorePosts = () => {
                 </Box>
 
                 <hr className={classes.line} />
-
-                {loading && (
+                {loading && <Loading/>}
+                {/* {loading && (
                     <Typography variant="h5" align="center">
                         -----Loading-----
                     </Typography>
-                )}
+                )} */}
                 {data?.getPublicPosts.length == 0 && (
                     <Typography variant="h5" align="center">
                         No Posts

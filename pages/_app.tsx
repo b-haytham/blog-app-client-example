@@ -3,21 +3,20 @@ import { ThemeProvider, CSSReset, theme } from "@chakra-ui/core";
 import { AppProps } from "next/app";
 import Head from "next/head";
 
-
+import { motion } from "framer-motion";
 
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 import "../styles/editor.css";
-
 
 import {
     CssBaseline,
     ThemeProvider as MThemeProvider,
 } from "@material-ui/core";
 
-import {theme as Mtheme} from '../utils/theme'
+import { theme as Mtheme } from "../utils/theme";
 
-const App: React.FC<AppProps> = ({ Component, pageProps }) => {
+const App: React.FC<AppProps> = ({ Component, pageProps, router }) => {
     React.useEffect(() => {
         const jssStyles = document.querySelector("#jss-server-side");
         if (jssStyles) {
@@ -38,7 +37,19 @@ const App: React.FC<AppProps> = ({ Component, pageProps }) => {
                 <ThemeProvider theme={theme}>
                     <CSSReset />
                     <CssBaseline />
-                    <Component {...pageProps} />
+                    <motion.div key={router.route} initial='pageInitial' animate='pageAnimate' variants={{
+                        pageInitial:{
+                            opacity: 0
+                        },
+                        pageAnimate: {
+                            opacity: 1,
+                            transition: {
+                                duration: 0.8
+                            }
+                        }
+                    }}>
+                        <Component {...pageProps} />
+                    </motion.div>
                 </ThemeProvider>
             </MThemeProvider>
         </>

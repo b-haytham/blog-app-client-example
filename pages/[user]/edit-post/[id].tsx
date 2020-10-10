@@ -7,6 +7,7 @@ import Editor from '../../../components/Editor/DynamicLoadedEditor'
 import { fromBase64ToObject } from "../../../utils/fromBase64ToObject";
 import { NextPage } from "next";
 import { gql } from "@apollo/client";
+import Loading from "../../../components/Loading";
 
 
 const EditPost: NextPage = () => {
@@ -20,7 +21,7 @@ const EditPost: NextPage = () => {
         }
     })
 
-    const [updatePost] = useUpdatePostMutation()
+    const [updatePost, {loading: updatePostLoading}] = useUpdatePostMutation()
 
     if(loading || meLoading) {
         return <Typography variant='h2' align='center'>------Loading------</Typography>
@@ -61,6 +62,7 @@ const EditPost: NextPage = () => {
 
     return (
         <Layout>
+            {(loading || meLoading || updatePostLoading ) && <Loading/>}
             <Typography variant="h3" align="center">
                 Edit Post
             </Typography>

@@ -58,9 +58,9 @@ const useStyles = makeStyles({
     container: {
         width: "400px",
         margin: "15px",
+        transition: 'all 0.3s',
         "&:hover": {
             transform: "scale(1.1)",
-            transitionDuration: "1s",
         },
         minHeight: '410px'
     },

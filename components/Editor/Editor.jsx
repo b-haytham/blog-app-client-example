@@ -84,7 +84,6 @@ const useStyles = makeStyles({
 
 const Editor2 = (props) => {
     const classes = useStyles();
-    console.log(props.isEdit ? props.init : 'hahahahahahahaha')
 
     // SHOW FORM
     const [showForm, setShowForm] = useState(false);
@@ -202,7 +201,7 @@ const Editor2 = (props) => {
                     },
                 }}
             />
-            <Box className={classes.buttonContainer}>
+            {!props.isComment && <Box className={classes.buttonContainer}>
                 <Button
                     onClick={() => setShowForm(!showForm)}
                     variant="contained"
@@ -219,7 +218,7 @@ const Editor2 = (props) => {
                 >
                     Continue
                 </Button>
-            </Box>
+            </Box>}
             {showForm && !props.isComment && (
                 <Box className={classes.form}>
                     <FormControl className={classes.formControl} fullWidth>
@@ -346,7 +345,7 @@ const Editor2 = (props) => {
                 >
                     Save
                 </Button>
-                <Button
+                {!props.isComment && <Button
                     
                     variant="contained"
                     color="secondary"
@@ -355,7 +354,7 @@ const Editor2 = (props) => {
                     startIcon={<VisibilityIcon />}
                 >
                     Preview Post
-                </Button>
+                </Button>}
                 
             </Box>
         </Box>

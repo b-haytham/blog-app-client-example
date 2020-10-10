@@ -1,4 +1,11 @@
-import { Box, Typography, Button } from "@material-ui/core";
+import {
+    Box,
+    Typography,
+    Button,
+    makeStyles,
+    Avatar,
+    IconButton,
+} from "@material-ui/core";
 import { useRouter } from "next/router";
 import Layout from "../../components/NavBar/Layout";
 import {
@@ -15,8 +22,105 @@ import { withApollo } from "../../utils/withApollo";
 
 import Editor from "../../components/Editor/DynamicLoadedEditor";
 import PostComments from "../../components/PostComments/PostComments";
+import { ThumbDownAlt, ThumbUpAlt } from "@material-ui/icons";
+
+const useStyles = makeStyles({
+    container: {
+        width: "100%",
+    },
+    firstSection: {
+        // height: "calc(100vh - 80px)",
+    },
+    firstSectionHeader: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        margin: "20px",
+        padding: "20px 50px",
+    },
+    thumbnailWrapper: {},
+    thumbnail: {},
+    title: {
+        wordWrap: "break-word",
+        fontSize: "40px",
+        fontWeight: "bolder",
+    },
+    icon: {
+        transition: "all .5s",
+        "&:hover": {
+            transform: "scale(1.3)",
+            color: "black",
+        },
+    },
+    content: {
+        margin: "80px auto",
+        width: "70%",
+        "& p": {
+            wordWrap: "break-word",
+            margin: "30px 0",
+            padding: '15px'
+        },
+        "& pre": {
+            padding: "20px",
+            backgroundColor: "black",
+            color: "white",
+            borderRadius: "25px",
+            overflowX: "auto",
+            overflowY: "hidden",
+            whiteSpace: "nowrap",
+        },
+        "& h1": {
+            textAlign: "center",
+            margin: "50px 0",
+            fontSize: "60px",
+        },
+        "& h2": {
+            margin: "40px 0",
+            fontSize: "50px",
+        },
+        "& h3": {
+            margin: "40px 0",
+            fontSize: "40px",
+        },
+        "& h4": {
+            margin: "40px 0",
+            fontSize: "35px",
+        },
+        "& h5": {
+            margin: "40px 0",
+            fontSize: "30px",
+        },
+        "& h6": {
+            margin: "20px 0",
+            fontSize: "25px",
+        },
+        "& img": {
+            margin: "50px auto",
+        },
+        "& ul, & ol": {
+            margin: '50px 0',
+            paddingLeft: '100px'
+        }, 
+        '& li': {
+            margin: '10px',
+            fontSize: '1.2 rem',
+            fontWeight: 'bolder'
+        },
+        "& blockquote": {
+            margin: '20px auto',
+            width: '60%',
+            fontSize: '1.5rem',
+            wordWrap: 'break-word',
+            color: '#bababa',
+            borderLeft: '3px solid #bababa'
+
+        }
+
+    },
+});
 
 const Post = () => {
+    const classes = useStyles();
     const router = useRouter();
     const { data: meData, loading: meLoading } = useMeQuery();
 
@@ -26,10 +130,9 @@ const Post = () => {
         },
     });
 
-    const [likePost] = useLikeMutation()
+    const [likePost] = useLikeMutation();
 
-    const [dislikePost] = useDislikeMutation()
-
+    const [dislikePost] = useDislikeMutation();
 
     const [createComment] = useCreateCommentMutation();
 
@@ -43,16 +146,19 @@ const Post = () => {
 
     if (error) {
         router.push("/");
+        console.log(error)
     }
 
     const html = data?.getPublicPostById
         ? draftjsToHtml(
               //@ts-ignore
-              fromBase64ToObject(data?.getPublicPostById.content!)
+              fromBase64ToObject(data?.getPublicPostById.content!),
+              undefined,
+              true
           )
         : "<p></p>";
 
-    console.log(html)    
+    console.log(html);
     const handleSave = async (data: any) => {
         console.log(data);
         console.log(router);
@@ -65,72 +171,142 @@ const Post = () => {
         console.log(result);
     };
 
+    const convertDate = (unix_date: number) => {
+        const d = new Date(unix_date * 1000);
+        return d.toLocaleString();
+    };
+
     return (
         <Layout>
-            <Typography variant="h2" align="center">
-                {data?.getPublicPostById.title}
-            </Typography>
-            <Typography variant="h4" align="center">
-                {data?.getPublicPostById.description}
-            </Typography>
+            <Box className={classes.container}>
+                <Box className={classes.firstSection} component="section">
+                    <Box className={classes.firstSectionHeader}>
+                        <Box minWidth="60%">
+                            <Typography
+                                variant="h1"
+                                component="h1"
+                                className={classes.title}
+                            >
+                                {data?.getPublicPostById.title}
+                            </Typography>
+                            <Typography
+                                style={{ color: "#bababa" }}
+                                variant="subtitle2"
+                            >
+                                Created@{" "}
+                                {convertDate(
+                                    +data?.getPublicPostById.created_at!
+                                )}
+                            </Typography>
+                        </Box>
+                        <Box
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                        >
+                            <Avatar
+                                src={
+                                    data?.getPublicPostById.creator.avatar ||
+                                    "/logo.png"
+                                }
+                            />
+                            <Typography style={{ marginLeft: "10px" }}>
+                                {data?.getPublicPostById.creator.username}
+                            </Typography>
+                        </Box>
+                    </Box>
 
-            {!error && data?.getPublicPostById && (
-                <>
-                    <Box
-                        margin="80px 0"
-                        display="flex"
-                        flexDirection="column"
-                        alignItems="center"
-                        justifyContent="center"
-                        dangerouslySetInnerHTML={{ __html: html }}
+                    <div className={classes.thumbnailWrapper}>
+                        <img
+                            src={
+                                data?.getPublicPostById.thumbnail ||
+                                "/default-pic.png"
+                            }
+                            className={classes.thumbnail}
+                            alt=""
+                        />
+                    </div>
+                    <Typography
+                        align="center"
+                        variant="subtitle1"
+                        style={{ color: "grey", marginTop: "20px" }}
+                    >
+                        {data?.getPublicPostById.description}
+                    </Typography>
+                </Box>
+
+                {!error && data?.getPublicPostById && (
+                    <>
+                        <Box
+                            className={classes.content}
+                            dangerouslySetInnerHTML={{ __html: html }}
+                        />
+                        <Box
+                            margin="20px auto"
+                            display="flex"
+                            justifyContent="center"
+                        >
+                            <IconButton
+                                onClick={async () => {
+                                    const result = await likePost({
+                                        variables: {
+                                            parent: "POST",
+                                            parentId: +data.getPublicPostById
+                                                .id,
+                                        },
+                                    });
+                                    console.log(result);
+                                }}
+                            >
+                                <ThumbUpAlt
+                                    fontSize="large"
+                                    className={classes.icon}
+                                />
+                            </IconButton>
+                            <IconButton
+                                onClick={async () => {
+                                    const result = await dislikePost({
+                                        variables: {
+                                            parent: "POST",
+                                            parentId: +data.getPublicPostById
+                                                .id,
+                                        },
+                                    });
+                                    console.log(result);
+                                }}
+                            >
+                                <ThumbDownAlt
+                                    fontSize="large"
+                                    className={classes.icon}
+                                />
+                            </IconButton>
+                        </Box>
+                    </>
+                )}
+
+                {meData?.me && (
+                    <Box width="90%" margin="0 auto">
+                        <Editor isComment onSave={handleSave} />{" "}
+                    </Box>
+                )}
+
+                {data?.getPublicPostById.comments.length == 0 && (
+                    <Typography
+                        variant="h3"
+                        style={{ fontSize: "50px", marginBottom: "50px" }}
+                        align="center"
+                    >
+                        Be the first to Comment
+                    </Typography>
+                )}
+
+                {data?.getPublicPostById && (
+                    <PostComments
+                        meId={+meData?.me?.id!}
+                        postId={+data.getPublicPostById.id}
                     />
-                    <Button
-                        variant="outlined"
-                        color="primary"
-                        onClick={async () => {
-                            const result = await likePost({
-                                variables: {
-                                    parent: "POST",
-                                    parentId: +data.getPublicPostById.id,
-                                },
-                            });
-                            console.log(result);
-                        }}
-                    >
-                        like
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        color="secondary"
-                        onClick={async () => {
-                            const result = await dislikePost({
-                                variables: {
-                                    parent: "POST",
-                                    parentId: +data.getPublicPostById.id,
-                                },
-                            });
-                            console.log(result);
-                        }}
-                    >
-                        dislike
-                    </Button>
-                </>
-            )}
-
-            {meData?.me && <Editor isComment onSave={handleSave} />}
-
-            {data?.getPublicPostById.comments.length == 0 && (
-                <Typography variant="h3" align="center">
-                    Be the first to Comment
-                </Typography>
-            )}
-
-            {data?.getPublicPostById && (
-                <PostComments
-                    meId={+meData?.me?.id!}
-                    postId={+data.getPublicPostById.id}
-                />
-            )}
+                )}
+            </Box>
         </Layout>
     );
 };

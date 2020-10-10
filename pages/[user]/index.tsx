@@ -6,8 +6,10 @@ import {
     Typography,
 } from "@material-ui/core";
 import { Facebook, GitHub, Twitter } from "@material-ui/icons";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef } from "react";
+import Loading from "../../components/Loading";
 import Layout from "../../components/NavBar/Layout";
 import PostsContainer from "../../components/PostsContainer/PostsContainer";
 import { useGetUserByUsernameQuery } from "../../generated/graphql";
@@ -23,7 +25,7 @@ const useStyles = makeStyles({
     },
     container: {
         margin: "20px auto",
-        width: "80%",
+        width: "90%",
     },
     header: {
         display: "flex",
@@ -114,6 +116,7 @@ const UserIndex = () => {
 
     return (
         <Layout>
+            {loading && <Loading />}
             <Box className={classes.container}>
                 <Box className={classes.header}>
                     <Avatar
@@ -147,51 +150,78 @@ const UserIndex = () => {
                     </Typography>
                 </Box>
                 <div ref={socialRef} className={classes.social}>
-                    <IconButton>
-                        <Twitter
-                            onMouseOver={() => {
-                                socialRef.current!.style.borderBottom =
-                                    "2px solid #00acee";
-                                // socialRef.current!.style.transition = "2px 0 2px 2px #00acee"
-                            }}
-                            onMouseLeave={() => {
-                                socialRef.current!.style.borderBottom =
-                                    "2px solid #4f4d4d";
-                            }}
-                            className={classes.tweeter}
-                            fontSize="large"
-                        />
-                    </IconButton>
-                    <IconButton>
-                        <GitHub
-                            onMouseOver={() => {
-                                socialRef.current!.style.borderBottom =
-                                    "2px solid black";
-                                // socialRef.current!.style.transition = "2px 0 2px 2px #00acee"
-                            }}
-                            onMouseLeave={() => {
-                                socialRef.current!.style.borderBottom =
-                                    "2px solid #4f4d4d";
-                            }}
-                            className={classes.github}
-                            fontSize="large"
-                        />
-                    </IconButton>
-                    <IconButton>
-                        <Facebook
-                            onMouseOver={() => {
-                                socialRef.current!.style.borderBottom =
-                                    "2px solid #3b5998";
-                                // socialRef.current!.style.transition = "2px 0 2px 2px #00acee"
-                            }}
-                            onMouseLeave={() => {
-                                socialRef.current!.style.borderBottom =
-                                    "2px solid #4f4d4d";
-                            }}
-                            className={classes.facebook}
-                            fontSize="large"
-                        />
-                    </IconButton>
+                    <a
+                        target="_blank"
+                        href={
+                            data?.getUser.tweeter
+                                ? data.getUser.tweeter
+                                : undefined
+                        }
+                    >
+                        <IconButton disabled={!data?.getUser.tweeter}>
+                            <Twitter
+                                onMouseOver={() => {
+                                    socialRef.current!.style.borderBottom =
+                                        "2px solid #00acee";
+                                    // socialRef.current!.style.transition = "2px 0 2px 2px #00acee"
+                                }}
+                                onMouseLeave={() => {
+                                    socialRef.current!.style.borderBottom =
+                                        "2px solid #4f4d4d";
+                                }}
+                                className={classes.tweeter}
+                                fontSize="large"
+                            />
+                        </IconButton>
+                    </a>
+                    <a
+                        target="_blank"
+                        href={
+                            data?.getUser.github
+                                ? data.getUser.github
+                                : undefined
+                        }
+                    >
+                        <IconButton disabled={!data?.getUser.github}>
+                            <GitHub
+                                onMouseOver={() => {
+                                    socialRef.current!.style.borderBottom =
+                                        "2px solid black";
+                                    // socialRef.current!.style.transition = "2px 0 2px 2px #00acee"
+                                }}
+                                onMouseLeave={() => {
+                                    socialRef.current!.style.borderBottom =
+                                        "2px solid #4f4d4d";
+                                }}
+                                className={classes.github}
+                                fontSize="large"
+                            />
+                        </IconButton>
+                    </a>
+                    <a
+                        target="_blank"
+                        href={
+                            data?.getUser.facebook
+                                ? data.getUser.facebook
+                                : undefined
+                        }
+                    >
+                        <IconButton disabled={!data?.getUser.facebook}>
+                            <Facebook
+                                onMouseOver={() => {
+                                    socialRef.current!.style.borderBottom =
+                                        "2px solid #3b5998";
+                                    // socialRef.current!.style.transition = "2px 0 2px 2px #00acee"
+                                }}
+                                onMouseLeave={() => {
+                                    socialRef.current!.style.borderBottom =
+                                        "2px solid #4f4d4d";
+                                }}
+                                className={classes.facebook}
+                                fontSize="large"
+                            />
+                        </IconButton>
+                    </a>
                 </div>
                 {data?.getUser && (
                     <Box>

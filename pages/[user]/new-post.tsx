@@ -8,6 +8,7 @@ import {
 import { withApollo } from "../../utils/withApollo";
 import { NextPage } from "next";
 import { gql } from "@apollo/client";
+import Loading from "../../components/Loading";
 
 const useStyles = makeStyles({
     container: {
@@ -21,7 +22,7 @@ const useStyles = makeStyles({
 const NewPost: NextPage = ({}) => {
     const classes = useStyles();
 
-    const [createPost, {error}] = useCreatePostMutation({errorPolicy: 'all', onError: (err)=>console.error(err)});
+    const [createPost, {error, loading}] = useCreatePostMutation({errorPolicy: 'all', onError: (err)=>console.error(err)});
 
 
     const handleSave = async (data: any) => {
@@ -40,6 +41,7 @@ const NewPost: NextPage = ({}) => {
 
     return (
         <Layout>
+            {loading && <Loading />}
             <Box className={classes.container}>
                 <Typography className={classes.title} align="center" variant="h3" component="h3">
                     Create New Post

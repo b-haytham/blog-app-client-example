@@ -2,6 +2,7 @@ import {
     MeDocument,
     MeQuery,
     useCreateUserMutation,
+    useForgotPasswordMutation,
     useMeQuery,
 } from "../generated/graphql";
 import { ChangeEvent, FormEvent, useState } from "react";
@@ -16,26 +17,72 @@ import {
     Input,
     InputLabel,
     Button,
+    Box
 } from "@material-ui/core";
+import Link from "next/link";
+import Loading from "../components/Loading";
 
 const useStyles = makeStyles({
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: 'calc(100vh - 80px)'
+    },
+    title: {
+        fontWeight: 'bolder',
+        fontSize: '50px',
+        color: 'black',
+        margin: '20px'
+    },
     form: {
         width: "70%",
-        margin: "0 auto",
+        padding: '20px',
+        margin: "20px auto",
+        border: '1px solid black',
+        borderRadius: '25px'
     },
     control: {
         margin: "20px 0",
     },
+    button: {
+        margin: "15px auto",
+        backgroundColor: "black",
+        color: "white",
+        fontWeight: "bolder",
+        transition: "all 0.2s",
+        "&:hover": {
+            color: "black",
+            backgroundColor: "white",
+            border: "2px solid black",
+        },
+    },
+    redirect: {
+        display: 'flex',
+        flexDirection:'column',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    link: {
+        margin: '10px',
+        fontWeight: 'bolder',
+        '&:hover': {
+            textDecoration: 'underline'
+        }
+    }
 });
 
 const SignUp = () => {
     const classes = useStyles();
 
     const router = useRouter();
-    const [createUser] = useCreateUserMutation();
+    const [createUser, {loading: createUserLoading}] = useCreateUserMutation();
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+
     const { data, loading } = useMeQuery();
 
     if (data?.me) {
@@ -66,8 +113,10 @@ const SignUp = () => {
 
     return (
         <Layout>
-            <Typography align="center" variant="h1">
-                Sign Up
+            {(loading || createUserLoading) && <Loading/>}
+            <Box className={classes.container}>
+            <Typography className={classes.title} align="center" variant="h1">
+                Register
             </Typography>
             <form onSubmit={handleSubmit} className={classes.form}>
                 <FormControl className={classes.control} fullWidth>
@@ -107,12 +156,24 @@ const SignUp = () => {
                         At least 6 ch
                     </FormHelperText>
                 </FormControl>
-                <FormControl className={classes.control} fullWidth>
-                    <Button type='submit' variant="outlined">
-                        Sign Up
+                <Box className={classes.redirect}>
+                    <Link href='/sign-in'>
+                        <a className={classes.link}>Already have an account ?! Login</a>
+                    </Link>
+                </Box>
+                <Box display='flex' justifyContent='center'>
+                    <Button
+                        type='submit'
+                        variant="contained"
+                        color="secondary"
+                        size="large"
+                        className={classes.button}
+                    >
+                        Submit
                     </Button>
-                </FormControl>
+                </Box>
             </form>
+            </Box>
         </Layout>
     );
 };
