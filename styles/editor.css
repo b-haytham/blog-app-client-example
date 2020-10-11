@@ -79,3 +79,13 @@ div.public-DraftEditor-content {
     border-radius: 0 0 25px 25px;
     min-height: 400px;
 }
+
+.editorClassNameComment {
+    width: 100%;
+    height: 100%;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    background-color: beige;
+    padding: 20px;
+    border-radius: 0 0 25px 25px;
+    min-height: 250px;
+}

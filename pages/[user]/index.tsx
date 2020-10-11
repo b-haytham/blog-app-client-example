@@ -114,6 +114,8 @@ const UserIndex = () => {
         }
     }, [data, error, loading, router]);
 
+    console.log(data?.getUser.facebook)
+
     return (
         <Layout>
             {loading && <Loading />}

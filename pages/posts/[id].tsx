@@ -23,13 +23,17 @@ import { withApollo } from "../../utils/withApollo";
 import Editor from "../../components/Editor/DynamicLoadedEditor";
 import PostComments from "../../components/PostComments/PostComments";
 import { ThumbDownAlt, ThumbUpAlt } from "@material-ui/icons";
+import Loading from "../../components/Loading";
 
 const useStyles = makeStyles({
     container: {
         width: "100%",
+        margin: '0px'
     },
     firstSection: {
         // height: "calc(100vh - 80px)",
+        width:'100%',
+        
     },
     firstSectionHeader: {
         display: "flex",
@@ -38,8 +42,12 @@ const useStyles = makeStyles({
         margin: "20px",
         padding: "20px 50px",
     },
-    thumbnailWrapper: {},
-    thumbnail: {},
+    thumbnailWrapper: {
+        
+    },
+    thumbnail: {
+        width: '100%'
+    },
     title: {
         wordWrap: "break-word",
         fontSize: "40px",
@@ -95,6 +103,7 @@ const useStyles = makeStyles({
             fontSize: "25px",
         },
         "& img": {
+            width: '100% !important',
             margin: "50px auto",
         },
         "& ul, & ol": {
@@ -130,20 +139,13 @@ const Post = () => {
         },
     });
 
-    const [likePost] = useLikeMutation();
+    const [likePost, {loading: likeLoading}] = useLikeMutation();
 
-    const [dislikePost] = useDislikeMutation();
+    const [dislikePost, {loading: dislikeLoading}] = useDislikeMutation();
 
-    const [createComment] = useCreateCommentMutation();
+    const [createComment, {loading:createCommentLoading}] = useCreateCommentMutation();
 
-    if (loading || meLoading) {
-        return (
-            <Typography variant="h4" align="center">
-                --------Loading--------
-            </Typography>
-        );
-    }
-
+    
     if (error) {
         router.push("/");
         console.log(error)
@@ -153,8 +155,6 @@ const Post = () => {
         ? draftjsToHtml(
               //@ts-ignore
               fromBase64ToObject(data?.getPublicPostById.content!),
-              undefined,
-              true
           )
         : "<p></p>";
 
@@ -178,6 +178,7 @@ const Post = () => {
 
     return (
         <Layout>
+            {(loading || meLoading || likeLoading || dislikeLoading || createCommentLoading ) && <Loading/>}
             <Box className={classes.container}>
                 <Box className={classes.firstSection} component="section">
                     <Box className={classes.firstSectionHeader}>
@@ -285,7 +286,7 @@ const Post = () => {
                 )}
 
                 {meData?.me && (
-                    <Box width="90%" margin="0 auto">
+                    <Box width="70%" margin="0 auto">
                         <Editor isComment onSave={handleSave} />{" "}
                     </Box>
                 )}

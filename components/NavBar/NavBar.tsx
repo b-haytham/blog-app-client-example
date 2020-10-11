@@ -31,6 +31,7 @@ const useStyles = makeStyles({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
+        margin: '0px'
     },
     linkActive: {
         backgroundColor: "white",

@@ -192,7 +192,7 @@ const Editor2 = (props) => {
                 editorState={editorState}
                 toolbarClassName="toolbarClassName"
                 wrapperClassName="wrapperClassName"
-                editorClassName="editorClassName"
+                editorClassName={props.isComment ? "editorClassNameComment" : "editorClassName"}
                 onEditorStateChange={onEditorStateChange}
                 toolbar={{
                     image: {
