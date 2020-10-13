@@ -336,7 +336,10 @@ const Editor2 = (props) => {
                             labelPlacement="top"
                         />
                     </FormControl>
-                    <Box className={classes.buttonContainer}>
+                    
+                </Box>
+            )}
+            <Box className={classes.buttonContainer}>
                         <Button
                             onClick={handleSave}
                             variant="contained"
@@ -359,8 +362,6 @@ const Editor2 = (props) => {
                             </Button>
                         )}
                     </Box>
-                </Box>
-            )}
         </Box>
     );
 };

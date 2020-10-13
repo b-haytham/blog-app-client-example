@@ -1,10 +1,9 @@
 import { Typography } from "@material-ui/core";
 import { useRouter } from "next/router";
 import Layout from "../../../components/NavBar/Layout";
-import { useGetPostByIdQuery, useMeQuery, useUpdatePostMutation } from "../../../generated/graphql";
+import { GetPostByIdDocument, GetPublicPostsDocument, useGetPostByIdQuery, useMeQuery, useUpdatePostMutation } from "../../../generated/graphql";
 import { withApollo } from "../../../utils/withApollo";
 import Editor from '../../../components/Editor/DynamicLoadedEditor'
-import { fromBase64ToObject } from "../../../utils/fromBase64ToObject";
 import { NextPage } from "next";
 import { gql } from "@apollo/client";
 import Loading from "../../../components/Loading";
@@ -40,13 +39,17 @@ const EditPost: NextPage = () => {
     }
 
 
-    const handleSave =async (data: any) => {
-        console.log(data)
+    const handleSave =async (postData: any) => {
+        console.log(postData)
         const result =  await updatePost({
             variables: {
                 postId: +router.query.id!,
-                input: data
-            }
+                input: postData
+            },
+            refetchQueries: [
+                { query: GetPostByIdDocument, variables: { postId: +data?.getPostById.id! } },
+                { query: GetPublicPostsDocument, variables: { postId: +data?.getPostById.id! } },
+            ]
         })
 
         console.log(result)

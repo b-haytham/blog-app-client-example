@@ -15,6 +15,7 @@ import { useRouter } from "next/router";
 import { ChangeEvent, useState } from "react";
 import Layout from "../../components/NavBar/Layout";
 import {
+    MeDocument,
     UpdateUserInputType,
     useJsonMutation,
     useMeQuery,
@@ -153,6 +154,7 @@ const EditProfile: NextPage = () => {
             variables: {
                 input: dataToSend as UpdateUserInputType,
             },
+            refetchQueries: [{query: MeDocument}]
         });
         console.log(result);
     };

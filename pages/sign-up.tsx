@@ -40,7 +40,7 @@ const useStyles = makeStyles({
         width: "70%",
         padding: '20px',
         margin: "20px auto",
-        border: '1px solid black',
+        border: '1px solid #21a60a',
         borderRadius: '25px'
     },
     control: {
@@ -48,14 +48,14 @@ const useStyles = makeStyles({
     },
     button: {
         margin: "15px auto",
-        backgroundColor: "black",
+        backgroundColor: "#21a60a",
         color: "white",
         fontWeight: "bolder",
         transition: "all 0.2s",
         "&:hover": {
-            color: "black",
+            color: "#21a60a",
             backgroundColor: "white",
-            border: "2px solid black",
+            border: "2px solid #21a60a",
         },
     },
     redirect: {
@@ -67,6 +67,7 @@ const useStyles = makeStyles({
     link: {
         margin: '10px',
         fontWeight: 'bolder',
+        color: '#21a60a',
         '&:hover': {
             textDecoration: 'underline'
         }
@@ -122,6 +123,7 @@ const SignUp = () => {
                 <FormControl className={classes.control} fullWidth>
                     <InputLabel htmlFor="username">Username</InputLabel>
                     <Input
+                    color='primary'
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         id="username"
@@ -134,6 +136,7 @@ const SignUp = () => {
                 <FormControl className={classes.control} fullWidth>
                     <InputLabel htmlFor="email">Email address</InputLabel>
                     <Input
+                    color='primary'
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         id="email"
@@ -146,6 +149,7 @@ const SignUp = () => {
                 <FormControl className={classes.control} fullWidth>
                     <InputLabel htmlFor="password">Password</InputLabel>
                     <Input
+                    color='primary'
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         type="password"

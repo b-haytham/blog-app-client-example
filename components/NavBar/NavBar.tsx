@@ -46,6 +46,11 @@ const useStyles = makeStyles({
         fontFamily: "roboto",
         fontSize: "1.8em",
         fontWeight: "bold",
+        cursor: 'pointer',
+        transition: 'all 0.3s',
+        '&:hover': {
+            transform: 'scale(1.2)'
+        }
     },
     link: {
         color: "black",
@@ -59,10 +64,15 @@ const useStyles = makeStyles({
         }
     },
     circle: {
+        color: 'black',
         border: "1px solid white",
+        transition: 'all 0.3s',
+        '&:hover': {
+           transform: 'scale(1.2)' 
+        }
     },
     divider: {
-        
+        borderTop: '0.5px solid #21a60a'
     }
 });
 
@@ -108,7 +118,12 @@ const NavBar = () => {
         <AppBar className={classes.root} position="static">
             {(loading || logoutLoading) && <Loading/>}
             <Box  display='flex' alignItems='center' justifyContent='center'> 
-                <Typography className={classes.logo}>Logo</Typography>
+                <Typography 
+                    className={classes.logo}
+                    onClick={()=> router.push('/')}
+                >
+                    Logo
+                </Typography>
             </Box>
             <Toolbar>
                 <ActiveNavLink
@@ -162,9 +177,10 @@ const NavBar = () => {
                             onClick={handleProfileMenuOpen}
                             color="inherit"
                         >
-                            <AccountCircle style={{ color: "black" }} />
+                            <AccountCircle className={classes.circle} />
                         </IconButton>
                         <Menu
+                            
                             anchorEl={anchorEl}
                             anchorOrigin={{
                                 vertical: "top",
@@ -201,7 +217,7 @@ const NavBar = () => {
                             >
                                 Profile
                             </MenuItem>
-                            <Divider/>
+                            <Divider className={classes.divider} />
                             <MenuItem
                                 onClick={() => {
                                     router.push(
@@ -212,7 +228,7 @@ const NavBar = () => {
                             >
                                 Dashboard
                             </MenuItem>
-                            <Divider/>
+                            <Divider className={classes.divider}/>
                             <MenuItem
                                 onClick={() => {
                                     router.push(
@@ -223,7 +239,7 @@ const NavBar = () => {
                             >
                                 Settings
                             </MenuItem>
-                            <Divider/>
+                            <Divider className={classes.divider}/>
                             <MenuItem
                                 onClick={async () => {
                                     await logout();

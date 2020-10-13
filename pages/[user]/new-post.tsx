@@ -3,7 +3,10 @@ import Layout from "../../components/NavBar/Layout";
 
 import Editor from "../../components/Editor/DynamicLoadedEditor";
 import {
-    useCreatePostMutation, useMeQuery,
+    GetLoggedInUserPostsDocument,
+    GetPublicPostsDocument,
+    useCreatePostMutation,
+    useMeQuery,
 } from "../../generated/graphql";
 import { withApollo } from "../../utils/withApollo";
 import { NextPage } from "next";
@@ -16,79 +19,80 @@ const useStyles = makeStyles({
         backgroundColor: "transparent",
     },
     title: {
-        margin: '15px'
-    }
+        margin: "15px",
+    },
 });
-
-
 
 const NewPost: NextPage = ({}) => {
     const classes = useStyles();
 
-    const {data: meData,loading: meLoading,error: meError} = useMeQuery()
+    const { data: meData, loading: meLoading, error: meError } = useMeQuery();
 
-    const [createPost, {error, loading}] = useCreatePostMutation({errorPolicy: 'all', onError: (err)=>console.error(err)});
-
+    const [createPost, { error, loading }] = useCreatePostMutation({
+        errorPolicy: "all",
+        onError: (err) => console.error(err),
+    });
 
     const handleSave = async (data: any) => {
         console.log(data);
 
-        
-        if(data.thumbnail){
-
-            const formData = new FormData()
-            formData.append('avatar', data.thumbnail, data.thumbnail.name)
-            formData.append('userId', meData?.me?.id!)    
+        if (data.thumbnail) {
+            const formData = new FormData();
+            formData.append("avatar", data.thumbnail, data.thumbnail.name);
+            formData.append("userId", meData?.me?.id!);
             try {
-                const result = await  Axios.post('http://localhost:8000/upload', formData) 
-                data.thumbnail = result.data.path
+                const result = await Axios.post(
+                    "http://localhost:8000/upload",
+                    formData
+                );
+                data.thumbnail = result.data.path;
             } catch (error) {
-                console.log(error)
+                console.log(error);
             }
         }
 
+        const formData = new FormData();
 
-
-        const formData = new FormData()
-        
-        data.contentFiles.forEach((item: any, i: any)=> formData.append('assets', item, item.name))
-        formData.append('userId', meData?.me?.id!)
-
-        
-        
-
-
+        data.contentFiles.forEach((item: any, i: any) =>
+            formData.append("assets", item, item.name)
+        );
+        formData.append("userId", meData?.me?.id!);
 
         try {
-            const result = await Axios.post('http://localhost:8000/uploads', formData)
-            const entityMapKeys = Object.keys(data.content.entityMap)
-            
-            
+            const result = await Axios.post(
+                "http://localhost:8000/uploads",
+                formData
+            );
+            const entityMapKeys = Object.keys(data.content.entityMap);
+
             for (const key of entityMapKeys) {
-                console.log(key)
-                data.content.entityMap[key].data.src =  result.data.files[key].path 
+                console.log(key);
+                data.content.entityMap[key].data.src =
+                    result.data.files[key].path;
             }
 
+            console.log(result);
 
-            console.log(result)
+            delete data.contentFiles;
 
-            
-            
-            delete data.contentFiles
-
-            console.log(data)    
-
+            console.log(data);
 
             const createPostResult = await createPost({
                 variables: {
-                    input: data                    
-                }
-            })
+                    input: data,
+                },
+                refetchQueries: [
+                    {
+                        query: GetLoggedInUserPostsDocument,
+                        variables: { query: "" },
+                    },
+                    { query: GetPublicPostsDocument, variables: { query: "" } },
+                ],
+            });
 
-            console.log(createPostResult)
+            console.log(createPostResult);
         } catch (error) {
-            
-            console.log(error)
+            console.log(error);
         }
 
         // const result = await createPost({
@@ -100,13 +104,18 @@ const NewPost: NextPage = ({}) => {
         // console.log(result)
     };
 
-    console.log(error)
+    console.log(error);
 
     return (
         <Layout>
             {loading && <Loading />}
             <Box className={classes.container}>
-                <Typography className={classes.title} align="center" variant="h3" component="h3">
+                <Typography
+                    className={classes.title}
+                    align="center"
+                    variant="h3"
+                    component="h3"
+                >
                     Create New Post
                 </Typography>
                 <Editor onSave={handleSave} />

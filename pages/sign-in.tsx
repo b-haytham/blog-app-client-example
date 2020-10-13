@@ -35,7 +35,7 @@ const useStyles = makeStyles({
         width: "70%",
         margin: "20px auto",
         padding: '20px',
-        border: '1px solid black',
+        border: '1px solid #21a60a',
         borderRadius: '25px'
     },
     control: {
@@ -49,14 +49,14 @@ const useStyles = makeStyles({
     },
     button: {
         margin: "15px auto",
-        backgroundColor: "black",
+        backgroundColor: "#21a60a",
         color: "white",
         fontWeight: "bolder",
         transition: "all 0.2s",
         "&:hover": {
-            color: "black",
+            color: "#21a60a",
             backgroundColor: "white",
-            border: "2px solid black",
+            border: "2px solid #21a60a",
         },
     },
     forgotPass: {
@@ -67,6 +67,7 @@ const useStyles = makeStyles({
     },
     link: {
         margin: '10px',
+        color: '#21a60a',
         fontWeight: 'bolder',
         '&:hover': {
             textDecoration: 'underline'
@@ -124,6 +125,7 @@ const SignIn = () => {
                 <FormControl className={classes.control} fullWidth>
                     <InputLabel htmlFor="email">Email address</InputLabel>
                     <Input
+                    color='primary'
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         id="email"
@@ -136,6 +138,7 @@ const SignIn = () => {
                 <FormControl className={classes.control} fullWidth>
                     <InputLabel htmlFor="password">Password</InputLabel>
                     <Input
+                    color='primary'
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         type="password"

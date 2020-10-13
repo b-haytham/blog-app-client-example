@@ -20,6 +20,7 @@ const useStyles = makeStyles({
         fontFamily: "Playball, cursive",
         color: "black",
         fontSize: "100px",
+        
     },
     homePage: {
         width: "100%",

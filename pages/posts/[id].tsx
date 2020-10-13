@@ -9,6 +9,7 @@ import {
 import { useRouter } from "next/router";
 import Layout from "../../components/NavBar/Layout";
 import {
+    GetCommentsByPostIdDocument,
     useCreateCommentMutation,
     useDislikeMutation,
     useGetPublicPostByIdQuery,
@@ -17,7 +18,6 @@ import {
 } from "../../generated/graphql";
 
 import draftjsToHtml from "draftjs-to-html";
-import { fromBase64ToObject } from "../../utils/fromBase64ToObject";
 import { withApollo } from "../../utils/withApollo";
 
 import Editor from "../../components/Editor/DynamicLoadedEditor";
@@ -101,6 +101,7 @@ const useStyles = makeStyles({
             fontSize: "25px",
         },
         "& img": {
+            
             width: "100% !important",
             margin: "50px auto",
         },
@@ -154,37 +155,39 @@ const Post = () => {
         : "<p></p>";
 
     console.log(html);
-    const handleSave = async (data: any) => {
-        console.log(data);
+    const handleSave = async (commentData: any) => {
+        console.log(commentData);
 
         const formData = new FormData();
 
-        data.contentFiles.forEach((item: any, i: any) =>
+        commentData.contentFiles.forEach((item: any, i: any) =>
             formData.append("assets", item, item.name)
         );
+        formData.append('userId', data?.getPublicPostById.creator.id!)
 
         const result = await Axios.post(
             "http://localhost:8000/uploads",
             formData
         );
-        const entityMapKeys = Object.keys(data.content.entityMap);
+        const entityMapKeys = Object.keys(commentData.content.entityMap);
 
         for (const key of entityMapKeys) {
             console.log(key);
-            data.content.entityMap[key].data.src = result.data.files[key].path;
+            commentData.content.entityMap[key].data.src = result.data.files[key].path;
         }
 
         console.log(result);
 
-        console.log(data.content)
+        console.log(commentData.content)
 
-        delete data.contentFiles
+        delete commentData.contentFiles
 
         const createCommentResult = await createComment({
             variables: {
                 postId: +router.query.id!,
-                content: data.content,
+                content: commentData.content,
             },
+            refetchQueries: [{query: GetCommentsByPostIdDocument, variables:{postId: +data?.getPublicPostById.id!}}]
         });
         console.log(createCommentResult);
     };
@@ -309,7 +312,7 @@ const Post = () => {
 
                 {meData?.me && (
                     <Box width="70%" margin="0 auto">
-                        <Editor isComment onSave={handleSave} />{" "}
+                        <Editor isComment onSave={handleSave} />
                     </Box>
                 )}
 

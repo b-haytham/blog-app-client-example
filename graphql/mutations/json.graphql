@@ -1,3 +1,0 @@
-mutation json($json:JSONObject!){
-  json(json: $json)
-}

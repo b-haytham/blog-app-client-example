@@ -18,7 +18,7 @@ div.public-DraftEditor-content {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Petrona', serif;
+    font-family:GetPostByIdDocument 'Petrona', serif;
 }
 
 .superFancyBlockquote {
