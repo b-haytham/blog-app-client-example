@@ -7,6 +7,7 @@ import CategoryBadge from "../components/CategoryBadge";
 
 
 import { faCode , faGraduationCap,  faLaptopCode, faHandHoldingUsd, faHeartbeat, faHandshake, faHashtag} from '@fortawesome/free-solid-svg-icons'
+import useWindowDimensions from "../utils/useWindowDimentions";
 
 
 
@@ -50,6 +51,11 @@ const topics = [
 
 const Index = () => {
     const classes = useStyles();
+
+    const windowDimention = useWindowDimensions()
+
+    console.log(windowDimention)
+
     return (
         <Layout>
             <Box

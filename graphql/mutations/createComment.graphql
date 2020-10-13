@@ -1,4 +1,4 @@
-mutation createComment($postId: Float!, $content:String!) {
+mutation createComment($postId: Float!, $content:JSONObject!) {
 	createComment(content:$content, postId: $postId){
     id
     content

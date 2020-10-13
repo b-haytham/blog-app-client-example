@@ -61,7 +61,16 @@ div.public-DraftEditor-content {
 }
 
 
+.fancyAtomic  {
 
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+
+.fancyAtomic img {
+    max-width: 100%;
+}
 
 .wrapperClassName {
     padding: 10px;

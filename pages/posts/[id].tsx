@@ -24,16 +24,16 @@ import Editor from "../../components/Editor/DynamicLoadedEditor";
 import PostComments from "../../components/PostComments/PostComments";
 import { ThumbDownAlt, ThumbUpAlt } from "@material-ui/icons";
 import Loading from "../../components/Loading";
+import Axios from "axios";
 
 const useStyles = makeStyles({
     container: {
         width: "100%",
-        margin: '0px'
+        margin: "0px",
     },
     firstSection: {
         // height: "calc(100vh - 80px)",
-        width:'100%',
-        
+        width: "100%",
     },
     firstSectionHeader: {
         display: "flex",
@@ -42,11 +42,9 @@ const useStyles = makeStyles({
         margin: "20px",
         padding: "20px 50px",
     },
-    thumbnailWrapper: {
-        
-    },
+    thumbnailWrapper: {},
     thumbnail: {
-        width: '100%'
+        width: "100%",
     },
     title: {
         wordWrap: "break-word",
@@ -66,7 +64,7 @@ const useStyles = makeStyles({
         "& p": {
             wordWrap: "break-word",
             margin: "30px 0",
-            padding: '15px'
+            padding: "15px",
         },
         "& pre": {
             padding: "20px",
@@ -103,28 +101,26 @@ const useStyles = makeStyles({
             fontSize: "25px",
         },
         "& img": {
-            width: '100% !important',
+            width: "100% !important",
             margin: "50px auto",
         },
         "& ul, & ol": {
-            margin: '50px 0',
-            paddingLeft: '100px'
-        }, 
-        '& li': {
-            margin: '10px',
-            fontSize: '1.2 rem',
-            fontWeight: 'bolder'
+            margin: "50px 0",
+            paddingLeft: "100px",
+        },
+        "& li": {
+            margin: "10px",
+            fontSize: "1.2 rem",
+            fontWeight: "bolder",
         },
         "& blockquote": {
-            margin: '20px auto',
-            width: '60%',
-            fontSize: '1.5rem',
-            wordWrap: 'break-word',
-            color: '#bababa',
-            borderLeft: '3px solid #bababa'
-
-        }
-
+            margin: "20px auto",
+            width: "60%",
+            fontSize: "1.5rem",
+            wordWrap: "break-word",
+            color: "#bababa",
+            borderLeft: "3px solid #bababa",
+        },
     },
 });
 
@@ -139,36 +135,58 @@ const Post = () => {
         },
     });
 
-    const [likePost, {loading: likeLoading}] = useLikeMutation();
+    const [likePost, { loading: likeLoading }] = useLikeMutation();
 
-    const [dislikePost, {loading: dislikeLoading}] = useDislikeMutation();
+    const [dislikePost, { loading: dislikeLoading }] = useDislikeMutation();
 
-    const [createComment, {loading:createCommentLoading}] = useCreateCommentMutation();
+    const [
+        createComment,
+        { loading: createCommentLoading },
+    ] = useCreateCommentMutation();
 
-    
     if (error) {
         router.push("/");
-        console.log(error)
+        console.log(error);
     }
 
     const html = data?.getPublicPostById
-        ? draftjsToHtml(
-              //@ts-ignore
-              fromBase64ToObject(data?.getPublicPostById.content!),
-          )
+        ? draftjsToHtml(data.getPublicPostById.content)
         : "<p></p>";
 
     console.log(html);
     const handleSave = async (data: any) => {
         console.log(data);
-        console.log(router);
-        const result = await createComment({
+
+        const formData = new FormData();
+
+        data.contentFiles.forEach((item: any, i: any) =>
+            formData.append("assets", item, item.name)
+        );
+
+        const result = await Axios.post(
+            "http://localhost:8000/uploads",
+            formData
+        );
+        const entityMapKeys = Object.keys(data.content.entityMap);
+
+        for (const key of entityMapKeys) {
+            console.log(key);
+            data.content.entityMap[key].data.src = result.data.files[key].path;
+        }
+
+        console.log(result);
+
+        console.log(data.content)
+
+        delete data.contentFiles
+
+        const createCommentResult = await createComment({
             variables: {
                 postId: +router.query.id!,
                 content: data.content,
             },
         });
-        console.log(result);
+        console.log(createCommentResult);
     };
 
     const convertDate = (unix_date: number) => {
@@ -178,7 +196,11 @@ const Post = () => {
 
     return (
         <Layout>
-            {(loading || meLoading || likeLoading || dislikeLoading || createCommentLoading ) && <Loading/>}
+            {(loading ||
+                meLoading ||
+                likeLoading ||
+                dislikeLoading ||
+                createCommentLoading) && <Loading />}
             <Box className={classes.container}>
                 <Box className={classes.firstSection} component="section">
                     <Box className={classes.firstSectionHeader}>

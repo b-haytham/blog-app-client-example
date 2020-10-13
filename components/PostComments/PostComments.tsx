@@ -62,9 +62,9 @@ const PostComments: React.FC<Props> = ({ postId }) => {
 
     const [dislikeComment] = useDislikeMutation();
 
-    const renderContentToHtml = (content: string) => {
+    const renderContentToHtml = (content:any) => {
         //@ts-ignore
-        return draftToHtml(fromBase64ToObject(content));
+        return draftToHtml(content);
     };
 
     return (

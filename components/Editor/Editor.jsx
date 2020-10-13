@@ -15,8 +15,6 @@ import {
     MenuItem,
     Typography,
 } from "@material-ui/core";
-import { fromObjectToBase64 } from "../../utils/fromObjectToBase64";
-import { fromBase64ToObject } from "../../utils/fromBase64ToObject";
 
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
@@ -102,6 +100,8 @@ const Editor2 = (props) => {
         props.isEdit ? props.init.description : ""
     );
 
+    const [contentFiles, setContentFiles] = useState([])
+
     //TAGS INPUT
     const [tags, setTags] = useState(props.isEdit ? props.init.tags.map((t, i)=>({index: i, displayValue: t})) : []);
 
@@ -137,20 +137,22 @@ const Editor2 = (props) => {
 
         const raw = convertToRaw(editorContent);
 
-        const base64Content = fromObjectToBase64(raw);
         const tagsArray = tags.map((t) => t.displayValue);
 
         let data;
 
         if (props.isComment) {
             data = {
-                content: base64Content,
+                content: raw,
+                contentFiles
+
             };
         } else {
             data = {
                 title,
                 description,
-                content: base64Content,
+                contentFiles,
+                content: raw,
                 tags: tagsArray.join(', '),
                 published: publish,
                 category: category
@@ -165,6 +167,7 @@ const Editor2 = (props) => {
     };
 
     const uploadImageCallBack = (f) => {
+        setContentFiles(prev=> [...prev, f])
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(f);
@@ -178,7 +181,7 @@ const Editor2 = (props) => {
         reader.onloadend = () => {
             console.log(reader.result)
             setPreview(reader.result);
-            setThumbnail(reader.result);
+            setThumbnail(f[0]);
             setOpenDropzone(false);
         };
     };
@@ -268,6 +271,7 @@ const Editor2 = (props) => {
                                         editorState.getCurrentContent()
                                     )
                                 );
+                                console.log(contentFiles)
                             }}
                         >
                             Convert to raw

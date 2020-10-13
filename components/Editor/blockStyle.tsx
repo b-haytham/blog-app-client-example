@@ -29,4 +29,8 @@ export const blockStyle = (block: ContentBlock) => {
     if(type ==='blockquote'){
       return 'superFancyBlockquote'
     }
+
+    if(type === 'atomic'){
+      return 'fancyAtomic'
+    }
 };

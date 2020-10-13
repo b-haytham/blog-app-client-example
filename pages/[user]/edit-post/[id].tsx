@@ -27,13 +27,12 @@ const EditPost: NextPage = () => {
         return <Typography variant='h2' align='center'>------Loading------</Typography>
     }
 
-    console.log(fromBase64ToObject( data?.getPostById.content!))
     console.log(data)
 
     const init = {
         title: data?.getPostById.title,
         description: data?.getPostById.description,
-        content: fromBase64ToObject(data?.getPostById.content!),
+        content: data?.getPostById.content!,
         tags: data?.getPostById.tags?.split(', ') || [],
         publish: data?.getPostById.published,
         category: data?.getPostById.category,

@@ -9,6 +9,8 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
+  JSONObject: any;
 };
 
 export type Query = {
@@ -85,7 +87,7 @@ export type Post = {
   title: Scalars['String'];
   description: Scalars['String'];
   thumbnail?: Maybe<Scalars['String']>;
-  content: Scalars['String'];
+  content: Scalars['JSONObject'];
   creatorId: Scalars['Float'];
   creator: User;
   likes: Array<Like>;
@@ -96,6 +98,7 @@ export type Post = {
   created_at: Scalars['String'];
   updated_at: Scalars['String'];
 };
+
 
 export type Like = {
   __typename?: 'Like';
@@ -114,7 +117,7 @@ export type Like = {
 export type Comment = {
   __typename?: 'Comment';
   id: Scalars['ID'];
-  content: Scalars['String'];
+  content: Scalars['JSONObject'];
   creatorId: Scalars['Float'];
   creator: User;
   postId: Scalars['Float'];
@@ -149,6 +152,7 @@ export type Mutation = {
   forgetPassword: Scalars['Boolean'];
   changePassword: Scalars['Boolean'];
   logout: Scalars['Boolean'];
+  json: Scalars['Boolean'];
   createPost: Post;
   updatePost: Post;
   deletePost: Scalars['Boolean'];
@@ -189,6 +193,11 @@ export type MutationChangePasswordArgs = {
 };
 
 
+export type MutationJsonArgs = {
+  json: Scalars['JSONObject'];
+};
+
+
 export type MutationCreatePostArgs = {
   input: CreatePostInputType;
 };
@@ -206,13 +215,13 @@ export type MutationDeletePostArgs = {
 
 
 export type MutationUpdateCommentArgs = {
-  content: Scalars['String'];
+  content: Scalars['JSONObject'];
   commentId: Scalars['Float'];
 };
 
 
 export type MutationCreateCommentArgs = {
-  content: Scalars['String'];
+  content: Scalars['JSONObject'];
   postId: Scalars['Float'];
 };
 
@@ -250,7 +259,7 @@ export type CreatePostInputType = {
   title: Scalars['String'];
   description: Scalars['String'];
   thumbnail?: Maybe<Scalars['String']>;
-  content: Scalars['String'];
+  content: Scalars['JSONObject'];
   category: Category;
   tags?: Maybe<Scalars['String']>;
   published: Scalars['Boolean'];
@@ -260,7 +269,7 @@ export type UpdatePostInputType = {
   title: Scalars['String'];
   description: Scalars['String'];
   thumbnail?: Maybe<Scalars['String']>;
-  content: Scalars['String'];
+  content: Scalars['JSONObject'];
   published: Scalars['Boolean'];
   tags: Scalars['String'];
   category: Category;
@@ -279,7 +288,7 @@ export type ChangePasswordMutation = (
 
 export type CreateCommentMutationVariables = Exact<{
   postId: Scalars['Float'];
-  content: Scalars['String'];
+  content: Scalars['JSONObject'];
 }>;
 
 
@@ -348,6 +357,16 @@ export type ForgotPasswordMutationVariables = Exact<{
 export type ForgotPasswordMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'forgetPassword'>
+);
+
+export type JsonMutationVariables = Exact<{
+  json: Scalars['JSONObject'];
+}>;
+
+
+export type JsonMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'json'>
 );
 
 export type LikeMutationVariables = Exact<{
@@ -578,7 +597,7 @@ export type ChangePasswordMutationHookResult = ReturnType<typeof useChangePasswo
 export type ChangePasswordMutationResult = Apollo.MutationResult<ChangePasswordMutation>;
 export type ChangePasswordMutationOptions = Apollo.BaseMutationOptions<ChangePasswordMutation, ChangePasswordMutationVariables>;
 export const CreateCommentDocument = gql`
-    mutation createComment($postId: Float!, $content: String!) {
+    mutation createComment($postId: Float!, $content: JSONObject!) {
   createComment(content: $content, postId: $postId) {
     id
     content
@@ -787,6 +806,36 @@ export function useForgotPasswordMutation(baseOptions?: Apollo.MutationHookOptio
 export type ForgotPasswordMutationHookResult = ReturnType<typeof useForgotPasswordMutation>;
 export type ForgotPasswordMutationResult = Apollo.MutationResult<ForgotPasswordMutation>;
 export type ForgotPasswordMutationOptions = Apollo.BaseMutationOptions<ForgotPasswordMutation, ForgotPasswordMutationVariables>;
+export const JsonDocument = gql`
+    mutation json($json: JSONObject!) {
+  json(json: $json)
+}
+    `;
+export type JsonMutationFn = Apollo.MutationFunction<JsonMutation, JsonMutationVariables>;
+
+/**
+ * __useJsonMutation__
+ *
+ * To run a mutation, you first call `useJsonMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useJsonMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [jsonMutation, { data, loading, error }] = useJsonMutation({
+ *   variables: {
+ *      json: // value for 'json'
+ *   },
+ * });
+ */
+export function useJsonMutation(baseOptions?: Apollo.MutationHookOptions<JsonMutation, JsonMutationVariables>) {
+        return Apollo.useMutation<JsonMutation, JsonMutationVariables>(JsonDocument, baseOptions);
+      }
+export type JsonMutationHookResult = ReturnType<typeof useJsonMutation>;
+export type JsonMutationResult = Apollo.MutationResult<JsonMutation>;
+export type JsonMutationOptions = Apollo.BaseMutationOptions<JsonMutation, JsonMutationVariables>;
 export const LikeDocument = gql`
     mutation like($parent: String!, $parentId: Float!) {
   like(parent: $parent, parentId: $parentId)

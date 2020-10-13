@@ -16,6 +16,7 @@ import { ChangeEvent, useState } from "react";
 import Layout from "../../components/NavBar/Layout";
 import {
     UpdateUserInputType,
+    useJsonMutation,
     useMeQuery,
     useUpdateUserMutation,
 } from "../../generated/graphql";
@@ -24,7 +25,7 @@ import { withApollo } from "../../utils/withApollo";
 import ImageIcon from "@material-ui/icons/Image";
 import { DropzoneDialog } from "material-ui-dropzone";
 import Loading from "../../components/Loading";
-
+import Axios from "axios";
 
 const useStyles = makeStyles({
     container: {
@@ -73,14 +74,24 @@ const EditProfile: NextPage = () => {
     const classes = useStyles();
     const router = useRouter();
 
+    const  [json]  = useJsonMutation()
+
     const [openDropzone, setOpenDropzone] = useState(false);
 
     const { data, loading, error } = useMeQuery();
 
-    const [updateUser,{loading: updateUserLoading}] = useUpdateUserMutation();
+    const [
+        updateUser,
+        { loading: updateUserLoading },
+    ] = useUpdateUserMutation();
 
+    const [previewAvatar, setPreviewAvatar] = useState(
+        data?.me?.avatar || "/logo.png"
+    );
 
-    const [formData, setFormData] = useState({
+    const [file, setFile] = useState<File | null>(null);
+
+    const [formInfo, setFormInfo] = useState({
         username: data?.me?.username,
         first_name: data?.me?.first_name || "",
         last_name: data?.me?.last_name || "",
@@ -96,36 +107,62 @@ const EditProfile: NextPage = () => {
     const handleChange = (
         e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
     ) => {
-        
-        setFormData({
-            ...formData,
+        setFormInfo({
+            ...formInfo,
             [e.target.name]: e.target.value,
         });
     };
 
     const onDropSave = (f: File[]) => {
+        //@ts-ignore
+        setFormInfo((prev) => ({
+            ...prev,
+            avatar: f[0],
+        }));
+        setFile(f[0]);
         const reader = new FileReader();
         reader.readAsDataURL(f[0]);
         reader.onloadend = () => {
             console.log(reader.result);
-            setFormData((prev)=>({
-                ...prev,
-                avatar: reader.result as string
-            }))
+            setPreviewAvatar(reader.result as string);
             setOpenDropzone(false);
         };
     };
+    console.log(formInfo.avatar);
 
     return (
         <Layout>
-            {(loading || updateUserLoading) && <Loading/>}
+            {(loading || updateUserLoading) && <Loading />}
             <Typography className={classes.title} variant="h2">
                 Edit Profile
             </Typography>
-
+            <button
+                onClick={async () => {
+                    console.log(formInfo.avatar);
+                    const form = new FormData();
+                    //@ts-ignore
+                    form.append("avatar", file, file?.name);
+                    Axios.post("http://localhost:8000/upload", form)
+                        .then((resp) => console.log(resp))
+                        .catch((err) => console.log(err));
+                }}
+            >
+                test
+            </button>
+            <button onClick={async()=>{
+                const jso = {
+                    path: 'hahahahhaha'
+                }
+                const result = await json({
+                    variables: {
+                        json: jso
+                    }
+                })
+                console.log(result)
+            }}>json</button>
             <Box className={classes.container}>
                 <Box className={classes.avatarContainer}>
-                    <Avatar src={formData.avatar} className={classes.avatar} />
+                    <Avatar src={previewAvatar} className={classes.avatar} />
                     <Button
                         onClick={() => setOpenDropzone(true)}
                         variant="contained"
@@ -147,7 +184,7 @@ const EditProfile: NextPage = () => {
                 <FormControl className={classes.formControl} fullWidth>
                     <InputLabel htmlFor="username">Username</InputLabel>
                     <Input
-                        value={formData.username}
+                        value={formInfo.username}
                         name="username"
                         onChange={handleChange}
                         id="username"
@@ -160,7 +197,7 @@ const EditProfile: NextPage = () => {
                 <FormControl className={classes.formControl} fullWidth>
                     <InputLabel htmlFor="first_name">Fist Name</InputLabel>
                     <Input
-                        value={formData.first_name}
+                        value={formInfo.first_name}
                         name="first_name"
                         onChange={handleChange}
                         id="first_name"
@@ -173,7 +210,7 @@ const EditProfile: NextPage = () => {
                 <FormControl className={classes.formControl} fullWidth>
                     <InputLabel htmlFor="last_name">Last Name</InputLabel>
                     <Input
-                        value={formData.last_name}
+                        value={formInfo.last_name}
                         name="last_name"
                         onChange={handleChange}
                         id="last_name"
@@ -186,7 +223,7 @@ const EditProfile: NextPage = () => {
                 <FormControl className={classes.formControl} fullWidth>
                     <InputLabel htmlFor="studied_at">Studied At</InputLabel>
                     <Input
-                        value={formData.studied_at}
+                        value={formInfo.studied_at}
                         name="studied_at"
                         onChange={handleChange}
                         id="studied_at"
@@ -199,7 +236,7 @@ const EditProfile: NextPage = () => {
                 <FormControl className={classes.formControl} fullWidth>
                     <InputLabel htmlFor="work_at">Work At</InputLabel>
                     <Input
-                        value={formData.work_at}
+                        value={formInfo.work_at}
                         name="work_at"
                         onChange={handleChange}
                         id="work_at"
@@ -213,9 +250,9 @@ const EditProfile: NextPage = () => {
                     <InputLabel htmlFor="short_biography">Short Bio</InputLabel>
                     <Input
                         multiline
-                        rowsMin='3'
-                        rowsMax='5'
-                        value={formData.short_biography}
+                        rowsMin="3"
+                        rowsMax="5"
+                        value={formInfo.short_biography}
                         name="short_biography"
                         onChange={handleChange}
                         id="short_biography"
@@ -228,7 +265,7 @@ const EditProfile: NextPage = () => {
                 <FormControl className={classes.formControl} fullWidth>
                     <InputLabel htmlFor="github">Github</InputLabel>
                     <Input
-                        value={formData.github}
+                        value={formInfo.github}
                         name="github"
                         onChange={handleChange}
                         id="github"
@@ -241,7 +278,7 @@ const EditProfile: NextPage = () => {
                 <FormControl className={classes.formControl} fullWidth>
                     <InputLabel htmlFor="facebook">Facebook</InputLabel>
                     <Input
-                        value={formData.facebook}
+                        value={formInfo.facebook}
                         name="facebook"
                         onChange={handleChange}
                         id="facebook"
@@ -255,7 +292,7 @@ const EditProfile: NextPage = () => {
                 <FormControl className={classes.formControl} fullWidth>
                     <InputLabel htmlFor="tweeter">Tweeter</InputLabel>
                     <Input
-                        value={formData.tweeter}
+                        value={formInfo.tweeter}
                         name="tweeter"
                         onChange={handleChange}
                         id="tweeter"
@@ -270,14 +307,13 @@ const EditProfile: NextPage = () => {
                     className={classes.button}
                     onClick={async () => {
                         let data = {
-                            ...formData
-                        }
-                        if(formData.avatar === '/logo.png'){
+                            ...formInfo,
+                        };
+                        if (formInfo.avatar === "/logo.png") {
                             //@ts-ignore
-                            delete data.avatar
+                            delete data.avatar;
                         }
 
-                        
                         const result = await updateUser({
                             variables: {
                                 input: data as UpdateUserInputType,
