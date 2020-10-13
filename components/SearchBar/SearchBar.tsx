@@ -19,19 +19,22 @@ const useStyles = makeStyles({
 
     input: {
         padding: "10px 50px 10px 50px",
-        border: "2px solid #121212",
+        border: "2px solid #21a60a",
         borderRadius: "25px",
         outline: "none",
+        width: '300px',
+        height: '50px',
         transition: 'all .5s',
         '&:hover': {
-            boxShadow: '3px 3px 3px  rgba(0,0,0,0.4)'
+            boxShadow: '3px 3px 3px 3px rgba(33,166,10,0.4)'
         }
     },
 
     searchIcon: {
         position: "absolute",
-        top: "12px",
+        top: "16px",
         left: "14px",
+        color: '#21a60a'
     },
 
     filterIcon: {

@@ -26,34 +26,44 @@ import ActiveNavLink from "./ActiveNavLink";
 const useStyles = makeStyles({
     root: {
         height: "80px",
-        backgroundColor: "black",
+        backgroundColor: "white",
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        margin: '0px'
+        margin: '0px',
+        boxShadow: 'none',
+        borderBottom: '1px solid #21a60a'
     },
     linkActive: {
         backgroundColor: "white",
-        color: 'black !important',
+        color: '#21a60a !important',
+        
     },
     logo: {
         padding: "5px 20px",
-        color: "white",
+        color: "#21a60a",
         fontFamily: "roboto",
-        fontSize: "1.5em",
+        fontSize: "1.8em",
         fontWeight: "bold",
     },
     link: {
-        color: "white",
+        color: "black",
         margin: "0 5px",
         padding: "5px 20px",
         borderRadius: "10px",
-        fontWeight: 'bolder'
+        fontWeight: 'bolder',
+        transition:'all 0.3s',
+        '&:hover': {
+            transform: 'scale(1.2)'
+        }
     },
     circle: {
         border: "1px solid white",
     },
+    divider: {
+        
+    }
 });
 
 const NavBar = () => {
@@ -98,7 +108,6 @@ const NavBar = () => {
         <AppBar className={classes.root} position="static">
             {(loading || logoutLoading) && <Loading/>}
             <Box  display='flex' alignItems='center' justifyContent='center'> 
-                <Logo  isNav />
                 <Typography className={classes.logo}>Logo</Typography>
             </Box>
             <Toolbar>
@@ -140,6 +149,7 @@ const NavBar = () => {
                     <>
                         {!matches && <ActiveNavLink
                             className={classes.link}
+                            activeClassName={classes.linkActive}
                             href="/[user]/new-post"
                             as={`/${data.me.username}/new-post`}
                         >
@@ -152,7 +162,7 @@ const NavBar = () => {
                             onClick={handleProfileMenuOpen}
                             color="inherit"
                         >
-                            <AccountCircle style={{ color: "white" }} />
+                            <AccountCircle style={{ color: "black" }} />
                         </IconButton>
                         <Menu
                             anchorEl={anchorEl}
@@ -176,10 +186,11 @@ const NavBar = () => {
                                         `/${data.me?.username}/new-post`
                                     );
                                 }}
-                            >
+                            >   
+                                
                                 Create New Post
                             </MenuItem>
-                            <Divider/>
+                            <Divider className={classes.divider}/>
                             <MenuItem
                                 onClick={() => {
                                     router.push(
@@ -230,4 +241,4 @@ const NavBar = () => {
     );
 };
 
-export default withApollo({ ssr: false })(NavBar);
+export default withApollo({ ssr: true })(NavBar);

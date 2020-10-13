@@ -25,7 +25,7 @@ const useStyles = makeStyles({
     },
     container: {
         margin: "20px auto",
-        width: "90%",
+        //width: "90%",
     },
     header: {
         display: "flex",
@@ -114,7 +114,7 @@ const UserIndex = () => {
         }
     }, [data, error, loading, router]);
 
-    console.log(data?.getUser.facebook)
+    console.log(data?.getUser.facebook);
 
     return (
         <Layout>
@@ -143,14 +143,16 @@ const UserIndex = () => {
                         </Typography>
                     </Box>
                 </Box>
-                <Box className={classes.bioWarpper}>
-                    <Typography variant="h5" gutterBottom>
-                        Bio
-                    </Typography>
-                    <Typography className={classes.bio} align="center">
-                        {data?.getUser.short_biography}
-                    </Typography>
-                </Box>
+                {data?.getUser.short_biography && (
+                    <Box className={classes.bioWarpper}>
+                        <Typography variant="h5" gutterBottom>
+                            Bio
+                        </Typography>
+                        <Typography className={classes.bio} align="center">
+                            {data?.getUser.short_biography}
+                        </Typography>
+                    </Box>
+                )}
                 <div ref={socialRef} className={classes.social}>
                     <a
                         target="_blank"

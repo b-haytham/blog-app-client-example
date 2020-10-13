@@ -12,7 +12,7 @@ import { withApollo } from "../utils/withApollo";
 const useStyles = makeStyles({
     line: {
         margin: "20px auto 50px",
-        color: "black",
+        border: '1px solid #21a60a',
         width: "50%",
     },
 });

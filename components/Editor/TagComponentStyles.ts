@@ -25,6 +25,6 @@ export const inputStyles = `
 `
 
 export const tagStyles = `
-    background: #cc1818;
+    background: #21a60a;
     margin: 3px 3px 10px 3px ;
 `

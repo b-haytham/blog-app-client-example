@@ -20,8 +20,7 @@ import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import SaveIcon from "@material-ui/icons/Save";
 import ImageIcon from "@material-ui/icons/Image";
-import VisibilityIcon from '@material-ui/icons/Visibility';
-
+import VisibilityIcon from "@material-ui/icons/Visibility";
 
 import { DropzoneDialog } from "material-ui-dropzone";
 import { blockStyle } from "./blockStyle";
@@ -37,29 +36,34 @@ const useStyles = makeStyles({
     form: {
         padding: "20px",
         boxShadow: "-8px 22px 19px -19px rgba(0,0,0,0.69)",
-        border: "2px solid #171717",
+        border: "2px solid #21a60a",
         borderRadius: "25px",
     },
     formControl: {
         margin: "20px 0",
     },
     buttonContainer: {
-        margin: "50px auto",
+        margin: "0px auto",
         display: "flex",
         justifyContent: "center",
     },
     button: {
         margin: "15px",
-        backgroundColor: "black",
+        backgroundColor: "#21a60a",
         color: "white",
         fontWeight: "bolder",
         "&:hover": {
-            color: "black",
+            color: "#21a60a",
             backgroundColor: "white",
-            border: "2px solid black",
+            border: "2px solid #21a60a",
         },
     },
-    thumbnail: {},
+    thumbnail: {
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+    },
     tags: {},
 });
 
@@ -100,10 +104,14 @@ const Editor2 = (props) => {
         props.isEdit ? props.init.description : ""
     );
 
-    const [contentFiles, setContentFiles] = useState([])
+    const [contentFiles, setContentFiles] = useState([]);
 
     //TAGS INPUT
-    const [tags, setTags] = useState(props.isEdit ? props.init.tags.map((t, i)=>({index: i, displayValue: t})) : []);
+    const [tags, setTags] = useState(
+        props.isEdit
+            ? props.init.tags.map((t, i) => ({ index: i, displayValue: t }))
+            : []
+    );
 
     //PUBLISH SWITCH
     const [publish, setPublish] = useState(
@@ -144,8 +152,7 @@ const Editor2 = (props) => {
         if (props.isComment) {
             data = {
                 content: raw,
-                contentFiles
-
+                contentFiles,
             };
         } else {
             data = {
@@ -153,21 +160,21 @@ const Editor2 = (props) => {
                 description,
                 contentFiles,
                 content: raw,
-                tags: tagsArray.join(', '),
+                tags: tagsArray.join(", "),
                 published: publish,
-                category: category
+                category: category,
             };
         }
 
-        if(thumbnail !== '/default-pic.png'){
-            data.thumbnail = thumbnail
+        if (thumbnail !== "/default-pic.png") {
+            data.thumbnail = thumbnail;
         }
 
         props.onSave(data);
     };
 
     const uploadImageCallBack = (f) => {
-        setContentFiles(prev=> [...prev, f])
+        setContentFiles((prev) => [...prev, f]);
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(f);
@@ -179,7 +186,7 @@ const Editor2 = (props) => {
         const reader = new FileReader();
         reader.readAsDataURL(f[0]);
         reader.onloadend = () => {
-            console.log(reader.result)
+            console.log(reader.result);
             setPreview(reader.result);
             setThumbnail(f[0]);
             setOpenDropzone(false);
@@ -195,7 +202,11 @@ const Editor2 = (props) => {
                 editorState={editorState}
                 toolbarClassName="toolbarClassName"
                 wrapperClassName="wrapperClassName"
-                editorClassName={props.isComment ? "editorClassNameComment" : "editorClassName"}
+                editorClassName={
+                    props.isComment
+                        ? "editorClassNameComment"
+                        : "editorClassName"
+                }
                 onEditorStateChange={onEditorStateChange}
                 toolbar={{
                     image: {
@@ -204,24 +215,25 @@ const Editor2 = (props) => {
                     },
                 }}
             />
-            {!props.isComment && <Box className={classes.buttonContainer}>
-                <Button
-                    onClick={() => setShowForm(!showForm)}
-                    variant="contained"
-                    color="secondary"
-                    size="large"
-                    className={classes.button}
-                    startIcon={
-                        showForm ? (
-                            <KeyboardArrowUpIcon />
-                        ) : (
-                            <KeyboardArrowDownIcon />
-                        )
-                    }
-                >
-                    Continue
-                </Button>
-            </Box>}
+            {!props.isComment && (
+                <Box className={classes.buttonContainer}>
+                    <Button
+                        onClick={() => setShowForm(!showForm)}
+                        variant="contained"
+                        size="large"
+                        className={classes.button}
+                        startIcon={
+                            showForm ? (
+                                <KeyboardArrowUpIcon />
+                            ) : (
+                                <KeyboardArrowDownIcon />
+                            )
+                        }
+                    >
+                        Continue
+                    </Button>
+                </Box>
+            )}
             {showForm && !props.isComment && (
                 <Box className={classes.form}>
                     <FormControl className={classes.formControl} fullWidth>
@@ -264,18 +276,6 @@ const Editor2 = (props) => {
                             Upload thumbnail
                         </Button>
 
-                        <Button
-                            onClick={() => {
-                                console.log(
-                                    convertToRaw(
-                                        editorState.getCurrentContent()
-                                    )
-                                );
-                                console.log(contentFiles)
-                            }}
-                        >
-                            Convert to raw
-                        </Button>
                         <DropzoneDialog
                             open={openDropzone}
                             onClose={() => setOpenDropzone(false)}
@@ -336,31 +336,31 @@ const Editor2 = (props) => {
                             labelPlacement="top"
                         />
                     </FormControl>
+                    <Box className={classes.buttonContainer}>
+                        <Button
+                            onClick={handleSave}
+                            variant="contained"
+                            color="secondary"
+                            size="large"
+                            className={classes.button}
+                            startIcon={<SaveIcon />}
+                        >
+                            Save
+                        </Button>
+                        {!props.isComment && (
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                size="large"
+                                className={classes.button}
+                                startIcon={<VisibilityIcon />}
+                            >
+                                Preview Post
+                            </Button>
+                        )}
+                    </Box>
                 </Box>
             )}
-            <Box className={classes.buttonContainer}>
-                <Button
-                    onClick={handleSave}
-                    variant="contained"
-                    color="secondary"
-                    size="large"
-                    className={classes.button}
-                    startIcon={<SaveIcon />}
-                >
-                    Save
-                </Button>
-                {!props.isComment && <Button
-                    
-                    variant="contained"
-                    color="secondary"
-                    size="large"
-                    className={classes.button}
-                    startIcon={<VisibilityIcon />}
-                >
-                    Preview Post
-                </Button>}
-                
-            </Box>
         </Box>
     );
 };

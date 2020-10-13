@@ -46,13 +46,13 @@ const useStyles = makeStyles({
     },
     button: {
         margin: "15px",
-        backgroundColor: "black",
+        backgroundColor: "#21a60a",
         color: "white",
         fontWeight: "bolder",
         "&:hover": {
-            color: "black",
+            color: "#21a60a",
             backgroundColor: "white",
-            border: "2px solid black",
+            border: "2px solid #21a60a",
         },
     },
     avatarContainer: {
@@ -66,7 +66,7 @@ const useStyles = makeStyles({
         width: "200px",
         height: "200px",
         //boxShadow: '2px 2px 2px 4px rgba(0,0,0,0.5)'
-        border: "3px solid black",
+        border: "3px solid #21a60a",
     },
 });
 
@@ -74,7 +74,7 @@ const EditProfile: NextPage = () => {
     const classes = useStyles();
     const router = useRouter();
 
-    const  [json]  = useJsonMutation()
+    const [json] = useJsonMutation();
 
     const [openDropzone, setOpenDropzone] = useState(false);
 
@@ -123,12 +123,39 @@ const EditProfile: NextPage = () => {
         const reader = new FileReader();
         reader.readAsDataURL(f[0]);
         reader.onloadend = () => {
-            console.log(reader.result);
             setPreviewAvatar(reader.result as string);
             setOpenDropzone(false);
         };
     };
     console.log(formInfo.avatar);
+
+    const handleSubmit = async () => {
+        let dataToSend = {
+            ...formInfo,
+        };
+        if (formInfo.avatar === "/logo.png") {
+            //@ts-ignore
+            delete data.avatar;
+        }
+
+        if (file) {
+            const form = new FormData();
+            //@ts-ignore
+            form.append("avatar", file, file?.name);
+            form.append("userId", data?.me?.id!);
+            const uploadRes = await Axios.post("http://localhost:8000/upload", form);
+            if(uploadRes.status === 200){
+                dataToSend.avatar = uploadRes.data.path
+            }
+        }
+
+        const result = await updateUser({
+            variables: {
+                input: dataToSend as UpdateUserInputType,
+            },
+        });
+        console.log(result);
+    };
 
     return (
         <Layout>
@@ -136,30 +163,7 @@ const EditProfile: NextPage = () => {
             <Typography className={classes.title} variant="h2">
                 Edit Profile
             </Typography>
-            <button
-                onClick={async () => {
-                    console.log(formInfo.avatar);
-                    const form = new FormData();
-                    //@ts-ignore
-                    form.append("avatar", file, file?.name);
-                    Axios.post("http://localhost:8000/upload", form)
-                        .then((resp) => console.log(resp))
-                        .catch((err) => console.log(err));
-                }}
-            >
-                test
-            </button>
-            <button onClick={async()=>{
-                const jso = {
-                    path: 'hahahahhaha'
-                }
-                const result = await json({
-                    variables: {
-                        json: jso
-                    }
-                })
-                console.log(result)
-            }}>json</button>
+          
             <Box className={classes.container}>
                 <Box className={classes.avatarContainer}>
                     <Avatar src={previewAvatar} className={classes.avatar} />
@@ -303,25 +307,7 @@ const EditProfile: NextPage = () => {
                     </FormHelperText>
                 </FormControl>
 
-                <Button
-                    className={classes.button}
-                    onClick={async () => {
-                        let data = {
-                            ...formInfo,
-                        };
-                        if (formInfo.avatar === "/logo.png") {
-                            //@ts-ignore
-                            delete data.avatar;
-                        }
-
-                        const result = await updateUser({
-                            variables: {
-                                input: data as UpdateUserInputType,
-                            },
-                        });
-                        console.log(result);
-                    }}
-                >
+                <Button className={classes.button} onClick={handleSubmit}>
                     Submit
                 </Button>
             </Box>

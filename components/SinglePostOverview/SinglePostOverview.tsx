@@ -11,91 +11,140 @@ import {
     Typography,
 } from "@material-ui/core";
 import { useRouter } from "next/router";
-import { Like, Post, User, Comment, useDeletePostMutation } from "../../generated/graphql";
+import {
+    Like,
+    Post,
+    User,
+    Comment,
+    useDeletePostMutation,
+} from "../../generated/graphql";
 
 interface Props {
-    info: ({ __typename?: "Post" } & Pick<
-        Post,
-        | "id"
-        | "title"
-        | "description"
-        | "content"
-        | "creatorId"
-        | "thumbnail"
-        | "tags"
-        | "published"
-        | "created_at"
-        | "updated_at"
-    > & {
-            creator: { __typename?: "User" } & Pick<
-                User,
-                "id" | "username" | "avatar"
-            >;
-            comments: Array<
-                { __typename?: "Comment" } & Pick<
-                    Comment,
-                    "id" | "content" | "creatorId"
-                >
-            >;
-            likes: Array<
-                { __typename?: "Like" } & Pick<Like, "id" | "creatorId">
-            >;
-        } & {kind: "private" | "public"}) | ((
-            { __typename?: 'Post' }
-            & Pick<Post, 'id' | 'title' | 'thumbnail' | 'tags' | 'description' | 'created_at'>
-            & { comments: Array<(
-              { __typename?: 'Comment' }
-              & Pick<Comment, 'id'>
-            )>, likes: Array<(
-              { __typename?: 'Like' }
-              & Pick<Like, 'id'>
-            )> }
-          ) & {username: string, avatar: string | null | undefined, kind: 'user'});
-    //kind: "private" | "public" 
+    info:
+        | ({ __typename?: "Post" } & Pick<
+              Post,
+              | "id"
+              | "title"
+              | "description"
+              | "content"
+              | "creatorId"
+              | "thumbnail"
+              | "tags"
+              | "published"
+              | "created_at"
+              | "updated_at"
+          > & {
+                  creator: { __typename?: "User" } & Pick<
+                      User,
+                      "id" | "username" | "avatar"
+                  >;
+                  comments: Array<
+                      { __typename?: "Comment" } & Pick<
+                          Comment,
+                          "id" | "content" | "creatorId"
+                      >
+                  >;
+                  likes: Array<
+                      { __typename?: "Like" } & Pick<Like, "id" | "creatorId">
+                  >;
+              } & { kind: "private" | "public" })
+        | (({ __typename?: "Post" } & Pick<
+              Post,
+              | "id"
+              | "title"
+              | "thumbnail"
+              | "tags"
+              | "description"
+              | "created_at"
+          > & {
+                  comments: Array<
+                      { __typename?: "Comment" } & Pick<Comment, "id">
+                  >;
+                  likes: Array<{ __typename?: "Like" } & Pick<Like, "id">>;
+              }) & {
+              username: string;
+              avatar: string | null | undefined;
+              kind: "user";
+          });
+    //kind: "private" | "public"
 }
 
 const useStyles = makeStyles({
+    root: {
+        boxShadow: "3px 3px 3px 3px rgba(33,166,10,0.4)",
+    },
     container: {
         width: "400px",
         margin: "15px",
-        transition: 'all 0.3s',
+
+        transition: "all 0.3s",
         "&:hover": {
             transform: "scale(1.1)",
         },
-        minHeight: '410px'
+        minHeight: "410px",
     },
     media: {
         height: "200px",
     },
+    button: {
+        color: "#21a60a",
+    },
+    buttonEdit: {
+        color: "#0aa19c",
+    },
+    buttonDelete: {
+        color: "#d91009",
+    },
+    focusHighlight: {
+        color: '#21a60a'
+    }
 });
 
-const SinglePostOverview: React.FC<Props> = ({ info, /*kind*/ }) => {
+const SinglePostOverview: React.FC<Props> = ({ info /*kind*/ }) => {
     const classes = useStyles();
     const router = useRouter();
-    console.log(info)
+    console.log(info);
 
-    const [deletePost] = useDeletePostMutation()
+    const [deletePost] = useDeletePostMutation();
 
     return (
         <Card elevation={3} className={classes.container}>
             <CardActionArea
+                className={classes.focusHighlight}
                 onClick={() =>
-                    router.push("/[user]", `/${info.kind !== 'user' ? info.creator.username : info.username}`)
+                    router.push(
+                        "/[user]",
+                        `/${
+                            info.kind !== "user"
+                                ? info.creator.username
+                                : info.username
+                        }`
+                    )
                 }
             >
                 <CardHeader
-                    
-                    avatar={<Avatar src={(info.kind !== 'user' ? info.creator.avatar : info.avatar) || '/logo.png'}  />}
-                    title={`${info.kind !== 'user' ? info.creator.username : info.username}`}
+                    avatar={
+                        <Avatar
+                            src={
+                                (info.kind !== "user"
+                                    ? info.creator.avatar
+                                    : info.avatar) || "/logo.png"
+                            }
+                        />
+                    }
+                    title={`${
+                        info.kind !== "user"
+                            ? info.creator.username
+                            : info.username
+                    }`}
                 />
             </CardActionArea>
             <CardActionArea
                 onClick={() => router.push("/posts/[id]", `/posts/${info.id}`)}
             >
                 <CardMedia
-                    
                     className={classes.media}
-                    image={info.thumbnail || '/default-pic.png'}
+                    image={info.thumbnail || "/default-pic.png"}
                     title="Contemplative Reptile"
                 />
                 <CardContent>
@@ -112,10 +161,10 @@ const SinglePostOverview: React.FC<Props> = ({ info, /*kind*/ }) => {
                 </CardContent>
             </CardActionArea>
             <CardActions>
-                {(info.kind === "public" || info.kind === 'user')  && (
+                {(info.kind === "public" || info.kind === "user") && (
                     <Button
                         size="small"
-                        color="primary"
+                        className={classes.button}
                         onClick={() =>
                             router.push("/posts/[id]", `/posts/${info.id}`)
                         }
@@ -127,7 +176,7 @@ const SinglePostOverview: React.FC<Props> = ({ info, /*kind*/ }) => {
                     <>
                         <Button
                             size="small"
-                            color="primary"
+                            className={classes.button}
                             onClick={() =>
                                 router.push("/posts/[id]", `/posts/${info.id}`)
                             }
@@ -136,7 +185,7 @@ const SinglePostOverview: React.FC<Props> = ({ info, /*kind*/ }) => {
                         </Button>
                         <Button
                             size="small"
-                            color="primary"
+                            className={classes.buttonEdit}
                             onClick={() =>
                                 router.push(
                                     "/[user]/edit-post/[id]",
@@ -146,14 +195,18 @@ const SinglePostOverview: React.FC<Props> = ({ info, /*kind*/ }) => {
                         >
                             Edit
                         </Button>
-                        <Button size="small" onClick={async() => {
-                            const result = await deletePost({
-                                variables: {
-                                    postId: +info.id
-                                }
-                            })
-                            console.log(result)
-                        }}>
+                        <Button
+                            size="small"
+                            className={classes.buttonDelete}
+                            onClick={async () => {
+                                const result = await deletePost({
+                                    variables: {
+                                        postId: +info.id,
+                                    },
+                                });
+                                console.log(result);
+                            }}
+                        >
                             Delete
                         </Button>
                     </>
